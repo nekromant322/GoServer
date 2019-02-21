@@ -8,19 +8,20 @@ import (
 )
 
 func main() {
-	page := ReadFile("Testpage.html")
-	log.Print(page)
+
 	PORT := ":8080"
-	log.Print("Running server on "+ PORT)
-	http.HandleFunc("/",CompleteTaskFunc)
+	log.Print("Running server on " + PORT)
+	http.HandleFunc("/", CompleteTaskFunc)
 	log.Fatal(http.ListenAndServe(PORT, nil))
 }
 
 func CompleteTaskFunc(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(r.URL.Path))
+	page := ReadFile("Testpage.html")
+	w.Write([]byte(page))
 }
 
-func ReadFile(path string) string{
+func ReadFile(path string) string {
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -31,11 +32,11 @@ func ReadFile(path string) string{
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		input+=scanner.Text();
+		input += scanner.Text()
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-    return input
+	return input
 }
