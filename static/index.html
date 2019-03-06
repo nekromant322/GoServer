@@ -1,22 +1,26 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
 <body>
 
-<h2>An Unordered HTML List</h2>
+    <div class="container">
+        <h1> Список оценок</h1>
+        <ul class="list-group">
+            {{range . }}
+            <li class="list-group-item">{{.Login}} {{.Lesson_number}} {{.Class_mark}} {{.Home_mark}} {{.Group}}</li>
+            {{end}}
 
-<ul>
-    <li>Coffee</li>
-    <li>Tea</li>
-    <li>Milk</li>
-</ul>
-
-<h2>An Ordered HTML List</h2>
-
-<ol>
-    <li>Coffee</li>
-    <li>Tea</li>
-    <li>Milk</li>
-</ol>
+        </ul>
+    </div>
 
 </body>
 </html>
