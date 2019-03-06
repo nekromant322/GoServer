@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -20,7 +21,7 @@ func main() {
 	println("Server listen on port", port)
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/test", testPage)
-	http.HandleFunc("/login", loginPage)
+	http.HandleFunc("/login", CreateHandler)
 
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
@@ -72,6 +73,25 @@ func loginPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+func CreateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+		}
+		login := r.FormValue("login")
+		password := r.FormValue("password")
+		fmt.Errorf(login, password)
+
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/", 301)
+	} else {
+		http.ServeFile(w, r, "static/new_login.html")
+	}
 }
 
 //ссылка на файл со скриптом
