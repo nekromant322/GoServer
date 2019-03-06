@@ -19,6 +19,7 @@ func main() {
 	port := ":8080"
 	println("Server listen on port", port)
 	http.HandleFunc("/", mainPage)
+	http.HandleFunc("/test", testPage)
 	http.HandleFunc("/login", loginPage)
 
 	err := http.ListenAndServe(port, nil)
@@ -27,8 +28,23 @@ func main() {
 	}
 
 }
-
 func mainPage(w http.ResponseWriter, r *http.Request) {
+
+	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
+	tmpl, err := template.ParseFiles("static/main.html")
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	err = tmpl.Execute(w, marks)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+
+		return
+	}
+
+}
+func testPage(w http.ResponseWriter, r *http.Request) {
 
 	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
 	tmpl, err := template.ParseFiles("static/index.html")
