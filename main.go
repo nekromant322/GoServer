@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Mark struct {
@@ -17,6 +19,7 @@ type Mark struct {
 
 func main() {
 
+	bdtest();
 	port := ":8080"
 	println("Server listen on port", port)
 	http.HandleFunc("/", mainPage)
@@ -31,20 +34,24 @@ func main() {
 }
 func mainPage(w http.ResponseWriter, r *http.Request) {
 
-	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
+
+	//w.Header().Add("Content Type", "text/css")
 	tmpl, err := template.ParseFiles("static/main.html")
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	err = tmpl.Execute(w, marks)
+	err = tmpl.Execute(w, nil)
+
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 
 		return
 	}
 
+
 }
+
 func testPage(w http.ResponseWriter, r *http.Request) {
 
 	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
@@ -83,7 +90,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		login := r.FormValue("login")
 		password := r.FormValue("password")
-		fmt.Errorf(login, password)
+		fmt.Println(login," ", password)
 
 		if err != nil {
 			log.Println(err)
@@ -93,6 +100,24 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "static/new_login.html")
 	}
 }
+func bdtest(){
+
+	db, err := sql.Open("sqlite3", "Journal.db") //подключение к бд
+	if err != nil {
+		log.Println(err)
+	}
+
+	var dbMessage string
+	sqlStatement := "SELECT MARKS.login FROM MARKS "
+	err = db.QueryRow(sqlStatement).Scan(&dbMessage)  //выполняет запрос sqlStatement и кладет результат в dbMessage
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer db.Close()
+
+}
+
 
 //ссылка на файл со скриптом
 //https://github.com/thewhitetulip/Tasks/blob/master/main.go
