@@ -1,123 +1,26 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"html/template"
+	"GoServer/views"
 	"log"
 	"net/http"
-	//_ "github.com/mattn/go-sqlite3"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
-type Mark struct {
-	Login         string `json:"login"`
-	Lesson_number int    `json:"lesson_number"`
-	Class_mark    int    `json:"class_mark"`
-	Home_mark     int    `json:"home_mark"`
-	Group         string `json:"group"`
-}
-
 func main() {
-
-	bdtest();
+	bdtest()
 	port := ":8080"
 	println("Server listen on port", port)
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/test", testPage)
 	http.HandleFunc("/login", CreateHandler)
-
+	http.HandleFunc("/androidLogin", views.AndroidLogin)
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe", err)
 	}
-
 }
-func mainPage(w http.ResponseWriter, r *http.Request) {
-
-
-	//w.Header().Add("Content Type", "text/css")
-	tmpl, err := template.ParseFiles("static/main.html")
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-	err = tmpl.Execute(w, nil)
-
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-
-		return
-	}
-
-
-}
-
-func testPage(w http.ResponseWriter, r *http.Request) {
-
-	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
-	tmpl, err := template.ParseFiles("static/index.html")
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-	err = tmpl.Execute(w, marks)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-
-		return
-	}
-
-}
-func loginPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("static/new_login.html")
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-	if err := tmpl.Execute(w, nil); err != nil {
-		http.Error(w, err.Error(), 400)
-		print("qwe")
-		return
-	}
-
-}
-func CreateHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-
-		err := r.ParseForm()
-		if err != nil {
-			log.Println(err)
-		}
-		login := r.FormValue("login")
-		password := r.FormValue("password")
-		fmt.Println(login," ", password)
-
-		if err != nil {
-			log.Println(err)
-		}
-		http.Redirect(w, r, "/", 301)
-	} else {
-		http.ServeFile(w, r, "static/new_login.html")
-	}
-}
-func bdtest(){
-
-	db, err := sql.Open("sqlite3", "Journal.db") //подключение к бд
-	if err != nil {
-		log.Println(err)
-	}
-
-	var dbMessage string
-	sqlStatement := "SELECT MARKS.login FROM MARKS "
-	err = db.QueryRow(sqlStatement).Scan(&dbMessage)  //выполняет запрос sqlStatement и кладет результат в dbMessage
-	if err != nil {
-		log.Println(err)
-	}
-
-	defer db.Close()
-
-}
-
 
 //ссылка на файл со скриптом
 //https://github.com/thewhitetulip/Tasks/blob/master/main.go
