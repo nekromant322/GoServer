@@ -32,22 +32,26 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 	log.Println(login, password)
 	isUser := db.ValidUser(login, password)
 	if !isUser {
+		log.Println("Unable to log user in")
 		http.Error(w, "Unable to log user in", http.StatusInternalServerError)
 	} else {
 		rank, err := db.GetRank(login)
 		if err != nil {
-			http.Error(w, "Unable to log user in", http.StatusInternalServerError)
+			http.Error(w, err.Error(), 400)
+			return
 		}
-		var groupsInfo []GroupInfo
-		groups := db.GetGroups(login)
-		for _, group := range groups {
-			groupsInfo.append(groupsInfo, db.GetGroupInfo(group, login))
+		if rank == 0 {
+			var groupsInfo []db.GroupInfo
+			groups := db.GetGroups(login)
+			for _, group := range groups {
+				groupsInfo = append(groupsInfo, db.GetGroupInfo(group, login))
+			}
+			data, _ := json.Marshal(groupsInfo)
+			w.Write([]byte(data))
 		}
-		data, err := json.Marshal(groupsInfo)
-		w.Write([]byte(data))
 	}
 }
-func mainPage(w http.ResponseWriter, r *http.Request) {
+func MainPage(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
 	tmpl, err := template.ParseFiles("static/main.html")
 	if err != nil {
@@ -63,7 +67,7 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func testPage(w http.ResponseWriter, r *http.Request) {
+func TestPage(w http.ResponseWriter, r *http.Request) {
 	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
 	tmpl, err := template.ParseFiles("static/index.html")
 	if err != nil {

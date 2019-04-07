@@ -9,13 +9,12 @@ import (
 )
 
 func main() {
-	bdtest()
 	port := ":8080"
 	println("Server listen on port", port)
-	http.HandleFunc("/", mainPage)
-	http.HandleFunc("/test", testPage)
-	http.HandleFunc("/login", CreateHandler)
-	http.HandleFunc("/androidLogin", views.AndroidLogin)
+	http.HandleFunc("/", views.MainPage)
+	http.HandleFunc("/test", views.TestPage)
+	http.HandleFunc("/login", views.CreateHandler)
+	http.HandleFunc("/androidlogin", views.AndroidLogin)
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe", err)

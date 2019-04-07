@@ -14,7 +14,7 @@ type Database struct {
 }
 
 func init() {
-	database.db, err = sql.Open("sqlite3", "./data.db")
+	database.db, err = sql.Open("sqlite3", "./serverDB.db")
 	if err != nil {
 		log.Fatal(err)
 	}
