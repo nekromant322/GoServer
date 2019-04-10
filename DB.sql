@@ -28,4 +28,10 @@ CREATE TABLE LESSONS(
     theme           TEXT,
     homework        TEXT
 );
+CREATE TABLE USERINFO(
+    login           TEXT    NOT NULL   UNIQUE,
+    real_name       TEXT    NOT NULL,
+    birthday        TEXT,
+    bonus_info      TEXT
+);
 CREATE INDEX groupsAndLogins ON MARKS(groupID, login);

@@ -38,8 +38,10 @@ func ValidUser(login, password string) bool {
 	}
 	//If the password matches, return true
 	if password == passwordFromDB {
+		log.Print("successfully validated")
 		return true
 	}
+	log.Print("username and password don't match")
 	//by default return false
 	return false
 }
@@ -88,7 +90,7 @@ func GetGroupInfo(group int, login string) GroupInfo {
 		lessonsInfo = append(lessonsInfo, lessonInfo)
 	}
 	groupInfo.Lessons = lessonsInfo
-	groupSQL := "SELECT group_name, name, teacher, amount FROM GROUPS, COURSES WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID)"
+	groupSQL := "SELECT group_name, name, real_name, amount FROM GROUPS, COURSES, USERINFO WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID) AND (teacher=USERINFO.login)"
 	log.Print("Getting group info for user ", group)
 	rows = database.query(groupSQL, group)
 	defer rows.Close()
