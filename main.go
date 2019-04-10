@@ -15,6 +15,8 @@ func main() {
 	http.HandleFunc("/test", views.TestPage)
 	http.HandleFunc("/login", views.CreateHandler)
 	http.HandleFunc("/androidlogin", views.AndroidLogin)
+	http.Handle("/static/", http.FileServer(http.Dir("public")))
+
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe", err)
