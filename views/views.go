@@ -2,9 +2,8 @@ package views
 
 import (
 	"GoServer/db"
-	"database/sql"
+	"GoServer/sessions"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -30,46 +29,56 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 	password := r.Form.Get("password")
 
 	log.Println(login, password)
-	isUser := db.ValidUser(login, password)
-	if !isUser {
-		log.Println("Unable to log user in")
-		http.Error(w, "Unable to log user in", http.StatusInternalServerError)
+	if (login == "") || (password == "") {
+		log.Println("Bad request")
+		http.Error(w, "Bad request", http.StatusBadRequest)
 	} else {
-		rank, err := db.GetRank(login)
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-		if rank == 0 {
-			var groupsInfo []db.GroupInfo
-			groups := db.GetGroups(login)
-			for _, group := range groups {
-				groupsInfo = append(groupsInfo, db.GetGroupInfo(group, login))
+		isUser := db.ValidUser(login, password)
+		if !isUser {
+			log.Println("Unable to log user in")
+			http.Error(w, "Unable to log user in", http.StatusInternalServerError)
+		} else {
+			rank, err := db.GetRank(login)
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
 			}
-			data, _ := json.Marshal(groupsInfo)
-			w.Write([]byte(data))
+			if rank == 0 {
+				var groupsInfo []db.GroupInfo
+				groups := db.GetGroups(login)
+				for _, group := range groups {
+					groupsInfo = append(groupsInfo, db.GetGroupInfo(group, login))
+				}
+				data, _ := json.Marshal(groupsInfo)
+				w.Write([]byte(data))
+			}
 		}
 	}
 }
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
-	tmpl, err := template.ParseFiles("static/main.html")
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-	err = tmpl.Execute(w, nil)
+	if sessions.IsLoggedIn(r) {
+		tmpl, err := template.ParseFiles("templates/main.html")
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		err = tmpl.Execute(w, nil)
 
-	if err != nil {
-		http.Error(w, err.Error(), 400)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
 
-		return
+			return
+		}
+	} else {
+		http.Redirect(w, r, "/login", 302)
 	}
+
 }
 
 func TestPage(w http.ResponseWriter, r *http.Request) {
 	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
-	tmpl, err := template.ParseFiles("static/index.html")
+	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -83,7 +92,7 @@ func TestPage(w http.ResponseWriter, r *http.Request) {
 
 }
 func loginPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("static/new_login.html")
+	tmpl, err := template.ParseFiles("templates/new_login.html")
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -103,25 +112,34 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		login := r.FormValue("login")
 		password := r.FormValue("password")
-		fmt.Println(login, " ", password)
+		log.Println(login, " ", password)
 		if err != nil {
 			log.Println(err)
 		}
-		http.Redirect(w, r, "/", 301)
+		session, err := sessions.Store.Get(r, "session")
+		if db.ValidUser(login, password) {
+			session.Values["loggedin"] = "true"
+			session.Values["username"] = login
+			session.Save(r, w)
+			http.Redirect(w, r, "/", 301)
+		} else {
+			http.ServeFile(w, r, "templates/login_fail.html")
+		}
+
 	} else {
-		http.ServeFile(w, r, "static/new_login.html")
+		http.ServeFile(w, r, "templates/new_login.html")
 	}
 }
-func bdtest() {
-	db, err := sql.Open("sqlite3", "Journal.db") //подключение к бд
-	if err != nil {
-		log.Println(err)
+
+//LogoutFunc Implements the logout functionality.
+//WIll delete the session information from the cookie store
+func LogoutFunc(w http.ResponseWriter, r *http.Request) {
+	session, err := sessions.Store.Get(r, "session")
+	if err == nil {
+		if session.Values["loggedin"] != "false" {
+			session.Values["loggedin"] = "false"
+			session.Save(r, w)
+		}
 	}
-	var dbMessage string
-	sqlStatement := "SELECT MARKS.login FROM MARKS "
-	err = db.QueryRow(sqlStatement).Scan(&dbMessage) //выполняет запрос sqlStatement и кладет результат в dbMessage
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
+	http.Redirect(w, r, "/login", 302)
 }
