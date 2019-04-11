@@ -42,15 +42,20 @@ func GetHash(login string, password string) string{
 			arr[i] = arr[i] * arr[j%len(arr)];
 			arr[i] = arr[i]%key;
 		}
-		if(arr[i] % 5 == 0 || arr[i] %11 ==0){
-			arr[i] = 65 + arr[i] % 26;
+		if(arr[i] % 5 == 0 || arr[i] %11 ==0 || arr[i] %7 ==0 || arr[i] % 13 ==0){
+			arr[i] = 48 + arr[i] % 10;
 		} else {
-			arr[i] = 47 + arr[i] % 10;
+
+			arr[i] = 65 + arr[i] % 26;
 		}
 
 	}
-	hash = "";
 	for i := 0; i < len(hash); i++ {
+		println(arr[i]);
+
+	}
+	hash = "";
+	for i := 0; i < len(arr); i++ {
 		character := string(arr[i]);
 		hash =hash + character;
 	}
