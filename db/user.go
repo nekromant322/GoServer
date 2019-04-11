@@ -21,6 +21,13 @@ type LessonInfo struct {
 	Homework     string `json:"Homework"`
 	Theme        string `json:"Theme"`
 }
+type Mark struct {
+	Login         string `json:"login"`
+	Lesson_number int    `json:"lesson_number"`
+	Class_mark    int    `json:"class_mark"`
+	Home_mark     int    `json:"home_mark"`
+	Group         string `json:"group"`
+}
 
 //ValidUser will check if the user exists in db and if it does, checks if the login/password combination is valid
 func ValidUser(login, password string) bool {
@@ -98,4 +105,18 @@ func GetGroupInfo(group int, login string) GroupInfo {
 		rows.Scan(&groupInfo.Group, &groupInfo.CourseName, &groupInfo.Teacher, &groupInfo.Amount)
 	}
 	return groupInfo
+}
+func GetMarkInfo(login string) []Mark{
+	markSQL := "SELECT login, lesson_number, class_mark, home_mark, groupID FROM MARKS WHERE login = "+fmt.Sprintf("%v", login);
+	log.Print("Getting marks for user ", login)
+	rows := database.query(markSQL, login);
+	defer rows.Close()
+	var marks []Mark;
+	var mark Mark;
+	for rows.Next() {
+		rows.Scan(&mark.Login, &mark.Lesson_number, &mark.Class_mark, &mark.Home_mark , &mark.Group)
+		marks = append(marks, mark)
+	}
+	return marks;
+
 }

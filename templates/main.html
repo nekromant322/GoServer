@@ -49,39 +49,20 @@
 				<td width="100">ДЗ</td>
 			</tr> </thead> 
 			<tbody style="background: #b8dcff">
-				<tr> 
-					<td>01.09.2019</td>
-					<td>
-						<label for="button" class="label">Введение в С++</label>	
-					</td>
-					<td>7</td>
-					<td>2</td>
-				</tr>
-				<tr> 
-					<td>01.09.2019</td>
-					<td>
-						<label for="button" class="label">Введение в С++</label>	
-					</td>
-					<td>7</td>
-					<td>2</td>
-				</tr>
-				<tr> 
-					<td>01.09.2019</td>
-					<td>
-						<label for="button" class="label">Введение в С++</label>	
-					</td>
-					<td>7</td>
-					<td>2</td>
-				</tr>
-				<tr> 
-					<td>01.09.2019</td>
-					<td>
-						<label for="button" class="label">Введение в С++</label>	
-					</td>
-					<td>7</td>
-					<td>2</td>
-				</tr>
 
+
+			<!-- BLOCK for for -->
+			{{range . }}
+			<tr>
+					<td>{{.Lesson_number}}</td>
+					<td>
+						<label for="button" class="label">Введение в С++</label>	
+					</td>
+					<td>{{.Class_mark}}</td>
+					<td>{{.Home_mark}}</td>
+				</tr>
+			{{end}}
+			<!-- end block-->
 			<div class="wrapper">
 				<input type="checkbox" id="button">
 				<div class="modal">

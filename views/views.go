@@ -4,18 +4,13 @@ import (
 	"GoServer/db"
 	"GoServer/sessions"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-type Mark struct {
-	Login         string `json:"login"`
-	Lesson_number int    `json:"lesson_number"`
-	Class_mark    int    `json:"class_mark"`
-	Home_mark     int    `json:"home_mark"`
-	Group         string `json:"group"`
-}
+
 
 //AndroidLogin is used to get all data about the user for android app
 func AndroidLogin(w http.ResponseWriter, r *http.Request) {
@@ -55,15 +50,25 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+//PANIC AT THE PENTAGRAMM, need to fix some bugs at GetMarkInfo may be
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
-	if sessions.IsLoggedIn(r) {
+	session, _ := sessions.Store.Get(r, "session")
+	if session.Values["loggedin"] == "true"{
 		tmpl, err := template.ParseFiles("templates/main.html")
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-		err = tmpl.Execute(w, nil)
+
+		//group_inf := GetGroupInfo(,"Danis")
+		login := session.Values["username"];
+		var marks []db.Mark;
+		marks = db.GetMarkInfo(fmt.Sprintf("%v", login));
+
+
+		err = tmpl.Execute(w, marks)
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
@@ -77,7 +82,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestPage(w http.ResponseWriter, r *http.Request) {
-	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
+	/*marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
 	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -89,7 +94,7 @@ func TestPage(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
+*/
 }
 func loginPage(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/new_login.html")
