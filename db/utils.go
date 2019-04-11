@@ -50,10 +50,6 @@ func GetHash(login string, password string) string{
 		}
 
 	}
-	for i := 0; i < len(hash); i++ {
-		println(arr[i]);
-
-	}
 	hash = "";
 	for i := 0; i < len(arr); i++ {
 		character := string(arr[i]);
