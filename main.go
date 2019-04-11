@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoServer/db"
 	"GoServer/views"
 	"log"
 	"net/http"
@@ -9,6 +10,10 @@ import (
 )
 
 func main() {
+	check_login := "mysimplelogin";
+	check_pass := "mysimplepass";
+	hash :=  db.GetHash(check_login,check_pass);
+	println("Check Hash :",hash);
 	port := ":8080"
 	println("Server listen on port", port)
 	http.HandleFunc("/", views.MainPage)
