@@ -31,6 +31,7 @@ type Mark struct {
 
 //ValidUser will check if the user exists in db and if it does, checks if the login/password combination is valid
 func ValidUser(login, password string) bool {
+	//password = GetHash(login,password); раскоментить когда в БД будут хранится хеши
 	var passwordFromDB string
 	userSQL := "SELECT password FROM USERS WHERE login=?"
 	log.Print("validating user ", login)
@@ -107,7 +108,7 @@ func GetGroupInfo(group int, login string) GroupInfo {
 	return groupInfo
 }
 func GetMarkInfo(login string) []Mark{
-	markSQL := "SELECT login, lesson_number, class_mark, home_mark, groupID FROM MARKS WHERE login = "+fmt.Sprintf("%v", login);
+	markSQL := "SELECT login, lesson_number, class_mark, home_mark, groupID FROM MARKS WHERE login = ?";
 	log.Print("Getting marks for user ", login)
 	rows := database.query(markSQL, login);
 	defer rows.Close()
