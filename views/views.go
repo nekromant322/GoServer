@@ -10,7 +10,10 @@ import (
 	"net/http"
 )
 
-
+type UserInfo struct {
+	marks   []db.Mark
+	group_info  db.GroupInfo
+}
 
 //AndroidLogin is used to get all data about the user for android app
 func AndroidLogin(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +54,7 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//PANIC AT THE PENTAGRAMM, need to fix some bugs at GetMarkInfo may be
+
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
 	session, _ := sessions.Store.Get(r, "session")
@@ -61,14 +64,27 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-
-		//group_inf := GetGroupInfo(,"Danis")
 		login := session.Values["username"];
-		var marks []db.Mark;
-		marks = db.GetMarkInfo(fmt.Sprintf("%v", login));
+
+		//var marks []db.Mark;
+		//marks = db.GetMarkInfo(fmt.Sprintf("%v", login)); //влзможно не нужно
+
+		rank, err := db.GetRank(fmt.Sprintf("%v", login))
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		if rank == 0 {
+			var groupsInfo []db.GroupInfo
+			groups := db.GetGroups(fmt.Sprintf("%v", login))
+			for _, group := range groups {
+				groupsInfo = append(groupsInfo, db.GetGroupInfo(group, fmt.Sprintf("%v", login)))
+			}
+			err = tmpl.Execute(w, groupsInfo);
+		}
 
 
-		err = tmpl.Execute(w, marks)
+
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
