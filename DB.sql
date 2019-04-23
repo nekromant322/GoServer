@@ -1,7 +1,10 @@
 CREATE TABLE USERS(
     login           TEXT    NOT NULL   UNIQUE,
     password        TEXT    NOT NULL,
-    rank            INTEGER NOT NULL
+    rank            INTEGER NOT NULL,
+    real_name       TEXT    NOT NULL,
+    birthday        TEXT,
+    bonus_info      TEXT
 );
 CREATE TABLE COURSES(
     courseID        INTEGER NOT NULL PRIMARY KEY,
@@ -27,11 +30,5 @@ CREATE TABLE LESSONS(
     lesson_number   INTEGER NOT NULL,
     theme           TEXT,
     homework        TEXT
-);
-CREATE TABLE USERINFO(
-    login           TEXT    NOT NULL   UNIQUE,
-    real_name       TEXT    NOT NULL,
-    birthday        TEXT,
-    bonus_info      TEXT
 );
 CREATE INDEX groupsAndLogins ON MARKS(groupID, login);

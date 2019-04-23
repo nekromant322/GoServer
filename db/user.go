@@ -21,9 +21,17 @@ type LessonInfo struct {
 	Homework     string `json:"Homework"`
 	Theme        string `json:"Theme"`
 }
+type Mark struct {
+	Login         string `json:"login"`
+	Lesson_number int    `json:"lesson_number"`
+	Class_mark    int    `json:"class_mark"`
+	Home_mark     int    `json:"home_mark"`
+	Group         string `json:"group"`
+}
 
 //ValidUser will check if the user exists in db and if it does, checks if the login/password combination is valid
 func ValidUser(login, password string) bool {
+	//password = GetHash(login,password); раскоментить когда в БД будут хранится хеши
 	var passwordFromDB string
 	userSQL := "SELECT password FROM USERS WHERE login=?"
 	log.Print("validating user ", login)
@@ -59,6 +67,22 @@ func GetRank(login string) (rankFromDB int8, err error) {
 		}
 	}
 	return rankFromDB, nil
+
+}
+
+//GetRealName will return the name of a user by his login
+func GetRealName(login string) (nameFromDB string, err error) {
+	rankSQL := "SELECT real_name FROM USERS WHERE login =?"
+	log.Print("Getting real name for user ", login)
+	rows := database.query(rankSQL, login)
+	defer rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&nameFromDB)
+		if err != nil {
+			return "", fmt.Errorf("No such user")
+		}
+	}
+	return nameFromDB, nil
 }
 
 //GetGroups returns a slice of groupIDs for a user
@@ -90,7 +114,7 @@ func GetGroupInfo(group int, login string) GroupInfo {
 		lessonsInfo = append(lessonsInfo, lessonInfo)
 	}
 	groupInfo.Lessons = lessonsInfo
-	groupSQL := "SELECT group_name, name, real_name, amount FROM GROUPS, COURSES, USERINFO WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID) AND (teacher=USERINFO.login)"
+	groupSQL := "SELECT group_name, name, real_name, amount FROM GROUPS, COURSES, USERS WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID) AND (teacher=USERS.login)"
 	log.Print("Getting group info for user ", group)
 	rows = database.query(groupSQL, group)
 	defer rows.Close()
@@ -98,4 +122,18 @@ func GetGroupInfo(group int, login string) GroupInfo {
 		rows.Scan(&groupInfo.Group, &groupInfo.CourseName, &groupInfo.Teacher, &groupInfo.Amount)
 	}
 	return groupInfo
+}
+func GetMarkInfo(login string) []Mark {
+	markSQL := "SELECT login, lesson_number, class_mark, home_mark, groupID FROM MARKS WHERE login = ?"
+	log.Print("Getting marks for user ", login)
+	rows := database.query(markSQL, login)
+	defer rows.Close()
+	var marks []Mark
+	var mark Mark
+	for rows.Next() {
+		rows.Scan(&mark.Login, &mark.Lesson_number, &mark.Class_mark, &mark.Home_mark, &mark.Group)
+		marks = append(marks, mark)
+	}
+	return marks
+
 }

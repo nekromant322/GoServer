@@ -4,17 +4,15 @@ import (
 	"GoServer/db"
 	"GoServer/sessions"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-type Mark struct {
-	Login         string `json:"login"`
-	Lesson_number int    `json:"lesson_number"`
-	Class_mark    int    `json:"class_mark"`
-	Home_mark     int    `json:"home_mark"`
-	Group         string `json:"group"`
+type UserInfo struct {
+	RealName   string         `json:"RealName"`
+	GroupsInfo []db.GroupInfo `json:"GroupsInfo"`
 }
 
 //AndroidLogin is used to get all data about the user for android app
@@ -38,6 +36,13 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 			log.Println("Unable to log user in")
 			http.Error(w, "Unable to log user in", http.StatusInternalServerError)
 		} else {
+			var userInfo UserInfo
+			realname, err := db.GetRealName(login)
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+			userInfo.RealName = realname
 			rank, err := db.GetRank(login)
 			if err != nil {
 				http.Error(w, err.Error(), 400)
@@ -49,21 +54,49 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 				for _, group := range groups {
 					groupsInfo = append(groupsInfo, db.GetGroupInfo(group, login))
 				}
-				data, _ := json.Marshal(groupsInfo)
+				userInfo.GroupsInfo = groupsInfo
+				data, _ := json.Marshal(userInfo)
 				w.Write([]byte(data))
 			}
 		}
 	}
 }
+
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
-	if sessions.IsLoggedIn(r) {
+	session, _ := sessions.Store.Get(r, "session")
+	if session.Values["loggedin"] == "true" {
 		tmpl, err := template.ParseFiles("templates/main.html")
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-		err = tmpl.Execute(w, nil)
+		login := fmt.Sprintf("%v", session.Values["username"])
+
+		//var marks []db.Mark;
+		//marks = db.GetMarkInfo(fmt.Sprintf("%v", login)); //влзможно не нужно
+
+		rank, err := db.GetRank(login)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		var userInfo UserInfo
+		realname, err := db.GetRealName(login)
+		userInfo.RealName = realname
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		if rank == 0 {
+			var groupsInfo []db.GroupInfo
+			groups := db.GetGroups(login)
+			for _, group := range groups {
+				groupsInfo = append(groupsInfo, db.GetGroupInfo(group, fmt.Sprintf("%v", login)))
+			}
+			userInfo.GroupsInfo = groupsInfo
+			err = tmpl.Execute(w, userInfo)
+		}
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
@@ -77,7 +110,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestPage(w http.ResponseWriter, r *http.Request) {
-	marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
+	/*marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
 	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -89,7 +122,7 @@ func TestPage(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
+	*/
 }
 func loginPage(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/new_login.html")
