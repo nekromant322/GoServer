@@ -10,11 +10,6 @@ import (
 	"net/http"
 )
 
-type UserInfo struct {
-	RealName   string         `json:"RealName"`
-	GroupsInfo []db.GroupInfo `json:"GroupsInfo"`
-}
-
 //AndroidLogin is used to get all data about the user for android app
 func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
@@ -36,7 +31,7 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 			log.Println("Unable to log user in")
 			http.Error(w, "Unable to log user in", http.StatusInternalServerError)
 		} else {
-			var userInfo UserInfo
+			var userInfo db.UserInfo
 			realname, err := db.GetRealName(login)
 			if err != nil {
 				http.Error(w, err.Error(), 400)
@@ -81,7 +76,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-		var userInfo UserInfo
+		var userInfo db.UserInfo
 		realname, err := db.GetRealName(login)
 		userInfo.RealName = realname
 		if err != nil {
@@ -92,7 +87,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 			var groupsInfo []db.GroupInfo
 			groups := db.GetGroups(login)
 			for _, group := range groups {
-				groupsInfo = append(groupsInfo, db.GetGroupInfo(group, fmt.Sprintf("%v", login)))
+				groupsInfo = append(groupsInfo, db.GetGroupInfo(group, login))
 			}
 			userInfo.GroupsInfo = groupsInfo
 			err = tmpl.Execute(w, userInfo)
@@ -100,7 +95,6 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
-
 			return
 		}
 	} else {

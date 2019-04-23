@@ -7,7 +7,16 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type UserInfo struct {
+	RealName   string      `json:"RealName"`
+	GroupsInfo []GroupInfo `json:"GroupsInfo"`
+}
+type Event struct {
+	EventText string `json:"Event"`
+	Date      string `json:"Date"`
+}
 type GroupInfo struct {
+	Events     []Event      `json:"Events"`
 	Lessons    []LessonInfo `json:"Lessons"`
 	Group      string       `json:"GroupName"`
 	CourseName string       `json:"CourseName"`
@@ -105,6 +114,8 @@ func GetGroupInfo(group int, login string) GroupInfo {
 	var groupInfo GroupInfo
 	var lessonInfo LessonInfo
 	var lessonsInfo []LessonInfo
+	var eventsInfo []Event
+	var event Event
 	lessonSQL := "SELECT MARKS.lesson_number, theme, homework, class_mark, home_mark FROM LESSONS, MARKS, GROUPS WHERE (GROUPS.groupID = ?) AND (GROUPS.courseID=LESSONS.courseID) AND (MARKS.groupID =?) AND (LESSONS.lesson_number = MARKS.lesson_number) AND (login = ?);"
 	log.Print("Getting lessons for group ", group)
 	rows := database.query(lessonSQL, group, group, login)
@@ -121,6 +132,15 @@ func GetGroupInfo(group int, login string) GroupInfo {
 	if rows.Next() {
 		rows.Scan(&groupInfo.Group, &groupInfo.CourseName, &groupInfo.Teacher, &groupInfo.Amount)
 	}
+	eventsSQL := "SELECT event, date FROM EVENTS WHERE groupID=? ORDER BY rowid DESC LIMIT 10"
+	log.Print("Getting events for group ", group)
+	rows = database.query(eventsSQL, group)
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&event.EventText, &event.Date)
+		eventsInfo = append(eventsInfo, event)
+	}
+	groupInfo.Events = eventsInfo
 	return groupInfo
 }
 func GetMarkInfo(login string) []Mark {

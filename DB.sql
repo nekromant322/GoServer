@@ -31,4 +31,9 @@ CREATE TABLE LESSONS(
     theme           TEXT,
     homework        TEXT
 );
+CREATE TABLE EVENTS(
+    groupID         INTEGER NOT NULL,
+    date            TEXT NOT NULL,
+    event           TEXT NOT NULL
+);
 CREATE INDEX groupsAndLogins ON MARKS(groupID, login);
