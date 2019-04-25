@@ -22,6 +22,7 @@ type GroupInfo struct {
 	CourseName string       `json:"CourseName"`
 	Teacher    string       `json:"Teacher"`
 	Amount     int          `json:"Amount"`
+	Info       string       `json:"Info"`
 }
 type LessonInfo struct {
 	LessonNumber int    `json:"LessonNumber"`
@@ -125,12 +126,12 @@ func GetGroupInfo(group int, login string) GroupInfo {
 		lessonsInfo = append(lessonsInfo, lessonInfo)
 	}
 	groupInfo.Lessons = lessonsInfo
-	groupSQL := "SELECT group_name, name, real_name, amount FROM GROUPS, COURSES, USERS WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID) AND (teacher=USERS.login)"
-	log.Print("Getting group info for user ", group)
+	groupSQL := "SELECT group_name, name, real_name, info, amount FROM GROUPS, COURSES, USERS WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID) AND (teacher=USERS.login)"
+	log.Print("Getting group info for group ", group)
 	rows = database.query(groupSQL, group)
 	defer rows.Close()
 	if rows.Next() {
-		rows.Scan(&groupInfo.Group, &groupInfo.CourseName, &groupInfo.Teacher, &groupInfo.Amount)
+		rows.Scan(&groupInfo.Group, &groupInfo.CourseName, &groupInfo.Teacher, &groupInfo.Info, &groupInfo.Amount)
 	}
 	eventsSQL := "SELECT event, date FROM EVENTS WHERE groupID=? ORDER BY rowid DESC LIMIT 10"
 	log.Print("Getting events for group ", group)

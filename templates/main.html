@@ -5,80 +5,85 @@
   <title>ЦКО МИЭТ</title>
 	<link href="/static/style_main.css" rel="stylesheet">
 	<link href="/static/syle_modal.css" rel="stylesheet">
-  </head>
+	</head>
   
   <body>
  
-   <div class="tabs">
-    <input id="tab1" type="radio" name="tabs" checked>
-    <label for="tab1" title="Профиль">Профиль</label>
+  	<div class="tabs">
+    	<input id="tab1" type="radio" name="tabs" checked>
+    	<label for="tab1" title="Профиль">Профиль</label>
 
-    <input id="tab2" type="radio" name="tabs">
-    <label for="tab2" title="Оценки">Оценки</label>
+   		<input id="tab2" type="radio" name="tabs">
+			<label for="tab2" title="Оценки">Оценки</label>
 
-    <input id="tab98" type="radio" name="tabs">
-    <label for="tab98" title="Новости">Новости</label>
- 
-    <input id="tab99" type="radio" name="tabs">
-    <label for="tab99" title="Уведомления">Уведомления</label>
- 
-    <section id="content-tab1">
-        <table width="100%" cellspacing="0" cellpadding="0">
-		<tr> 
-			<td class="leftcol" width="250"><img src="images/ava.jpg" alt="" class="round" width ="200px" vspace="10" hspace="40" align="right"></td>
-			<td  align="left"><h2><b>{{.RealName}}</b></h2></td>
-        </tr>
-		<tr> 
-			<td class="leftcol" width="250"></td>
-			<td  align="left">
-				{{range .GroupsInfo}}
-				<h2><p>Курс: <b>{{.CourseName}}</b></h2>
-				<h4>Преподаватель: {{.Teacher}}</h4>
-				{{end}}
-        </tr>
+			<input id="tab3" type="radio" name="tabs">
+			<label for="tab3" title="Новости">Уведомления</label>
 	
-  </table>
-    </section>
-	   {{range .GroupsInfo}}
-    <section id="content-tab2" >
-		<h1> {{.CourseName}}</h1>
-		<table id="tab2-table" width="70%" style=" font-family: Sans-Serif; text-align: center; border-collapse: separate; border-spacing: 5px; border: 16px solid #ECE9E0; border-radius: 20px;">
-			<thead style="background: #0079ea"><tr> 
-				<td width="100">№</td>
-				<td width="500">Тема занятия</td>
-				<td width="100">Оценка</td>
-				<td width="100">ДЗ</td>
-			</tr> </thead> 
-			<tbody style="background: #b8dcff">
-
-
-			<!-- BLOCK for for -->
-			 {{range .Lessons}}
-			<tr>
-					<td>   {{.LessonNumber}}  </td>
-					<td>
-						<label for="button" class="label">{{.Theme}}</label>
-					</td>
-					<td>    {{.ClassMark}} </td>
-					<td>   {{.HomeMark}}</td>
-				</tr>
-			{{end}}
-			</tbody>
-		</table>
-        
-    </section>
-	   {{end}}
-    <section id="content-tab98">
-        <p>
-          Новости для всех учащихся ЦКО МИЭТ....
-		</p>
-    </section> 
-    <section id="content-tab99">
-        <p>
-          Уведомления только для вашей группы....
-        </p>
-    </section>    
-</div>
-  
+			<input id="tab99" type="radio" name="tabs">
+			<label for="tab99" title="Уведомления">Новости</label>
+	
+			<section id="content-tab1">
+				<table width="100%" cellspacing="0" cellpadding="0">
+					<tr> 
+						<td class="leftcol" width="250"><img src="images/ava.jpg" alt="" class="round" width ="200px" vspace="10" hspace="40" align="right"></td>
+						<td  align="left"><h2><b>{{.RealName}}</b></h2></td>
+					</tr>
+					<tr> 
+						<td class="leftcol" width="250"></td>
+						<td  align="left">
+							{{range .GroupsInfo}}
+							<h2><p>Курс: <b>{{.CourseName}}</b></h2>
+							<h4>Преподаватель: {{.Teacher}}</h4>
+							<h4>{{.Info}}</h4>
+							{{end}}
+					</tr>
+				</table>
+			</section>
+			<section id="content-tab2">
+				{{range .GroupsInfo}}
+				<h1> {{.CourseName}}</h1>
+				<table id="tab2-table" width="70%" style=" font-family: Sans-Serif; text-align: center; border-collapse: separate; border-spacing: 5px; border: 16px solid #ECE9E0; border-radius: 20px;">
+					<thead style="background: #0079ea"><tr> 
+						<td width="100">№</td>
+						<td width="500">Тема занятия</td>
+						<td width="100">Оценка</td>
+						<td width="100">ДЗ</td>
+					</tr> </thead> 
+					<tbody style="background: #b8dcff">
+						{{range .Lessons}}
+						<tr>
+							<td>   {{.LessonNumber}}  </td>
+							<td>
+								<label for="button" class="label">{{.Theme}}</label>
+								</td>
+							<td>    {{.ClassMark}} </td>
+							<td>   {{.HomeMark}}</td>
+						</tr>
+						{{end}}
+					</tbody>
+				</table>
+				{{end}}
+			</section>
+			<section id="content-tab3">
+				{{range .GroupsInfo}}
+				<h1> {{.CourseName}}</h1>
+				<table id="tab3-table" width="70%" style=" font-family: Sans-Serif; text-align: center; border-collapse: separate; border-spacing: 5px; border: 16px solid #ECE9E0; border-radius: 20px;">
+					<thead style="background: #0079ea"><tr> 
+						<td width="100">Дата</td>
+						<td width="500">Событие</td>
+						</tr> 
+					</thead> 
+					<tbody style="background: #b8dcff">
+						{{range .Events}}
+						<tr>
+							<td>   {{.Date}}  </td>
+							<td>   {{.EventText}}</td>
+						</tr>
+						{{end}}
+					</tbody>
+				</table>
+				{{end}}
+			</section>
+		</div>
   </body>
 </html>

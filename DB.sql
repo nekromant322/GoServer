@@ -22,8 +22,8 @@ CREATE TABLE GROUPS(
     groupID         INTEGER NOT NULL PRIMARY KEY,
     group_name      TEXT NOT NULL,
     courseID        INTEGER NOT NULL,
-    teacher         TEXT    
-
+    teacher         TEXT,    
+    info            TEXT
 ); 
 CREATE TABLE LESSONS(
     courseID        INTEGER NOT NULL,
