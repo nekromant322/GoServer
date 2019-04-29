@@ -144,11 +144,20 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		session, err := sessions.Store.Get(r, "session")
-		if db.ValidUser(login, password) {
+
+		var check bool
+		var rank int
+		check , rank = db.ValidUser(login, password)
+		if check {
 			session.Values["loggedin"] = "true"
 			session.Values["username"] = login
 			session.Save(r, w)
-			http.Redirect(w, r, "/", 301)
+			if (rank == 0) {
+				http.Redirect(w, r, "/", 301)
+			}
+			//if(rank == 1){
+			//http.Redirect(w, r, "/teacher.html", 301)
+		    //}
 		} else {
 			http.ServeFile(w, r, "templates/login_fail.html")
 		}

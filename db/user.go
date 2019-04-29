@@ -40,28 +40,29 @@ type Mark struct {
 }
 
 //ValidUser will check if the user exists in db and if it does, checks if the login/password combination is valid
-func ValidUser(login, password string) bool {
+func ValidUser(login, password string) (bool, int) {
 	//password = GetHash(login,password); раскоментить когда в БД будут хранится хеши
 	var passwordFromDB string
-	userSQL := "SELECT password FROM USERS WHERE login=?"
+	var rank int
+	userSQL := "SELECT password, rank FROM USERS WHERE login=?"
 	log.Print("validating user ", login)
 	rows := database.query(userSQL, login)
 
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&passwordFromDB)
+		err := rows.Scan(&passwordFromDB, &rank)
 		if err != nil {
-			return false
+			return false , 0
 		}
 	}
 	//If the password matches, return true
 	if password == passwordFromDB {
 		log.Print("successfully validated")
-		return true
+		return true , rank
 	}
 	log.Print("username and password don't match")
 	//by default return false
-	return false
+	return false, 0
 }
 
 //GetRank will return the rank of a user by his login
