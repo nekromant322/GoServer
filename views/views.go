@@ -26,7 +26,7 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 		log.Println("Bad request")
 		http.Error(w, "Bad request", http.StatusBadRequest)
 	} else {
-		isUser := db.ValidUser(login, password)
+		isUser , _:= db.ValidUser(login, password)
 		if !isUser {
 			log.Println("Unable to log user in")
 			http.Error(w, "Unable to log user in", http.StatusInternalServerError)
@@ -152,12 +152,12 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 			session.Values["loggedin"] = "true"
 			session.Values["username"] = login
 			session.Save(r, w)
-			if (rank == 0) {
-				http.Redirect(w, r, "/", 301)
-			}
-			//if(rank == 1){
-			//http.Redirect(w, r, "/teacher.html", 301)
-		    //}
+		if (rank == 0) {
+			http.Redirect(w, r, "/", 301)
+		}
+		if(rank == 1){
+		http.ServeFile(w, r, "/frames.html")
+		}
 		} else {
 			http.ServeFile(w, r, "templates/login_fail.html")
 		}
