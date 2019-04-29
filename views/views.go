@@ -155,8 +155,9 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		if (rank == 0) {
 			http.Redirect(w, r, "/", 301)
 		}
+		//Need to fix
 		if(rank == 1){
-		http.ServeFile(w, r, "/frames.html")
+		http.ServeFile(w, r, "templates/frames.html")
 		}
 		} else {
 			http.ServeFile(w, r, "templates/login_fail.html")

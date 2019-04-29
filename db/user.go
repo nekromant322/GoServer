@@ -57,8 +57,9 @@ func ValidUser(login, password string) (bool, int) {
 	}
 	//If the password matches, return true
 	if password == passwordFromDB {
-		log.Print("successfully validated")
+		log.Print("successfully validated with rank", rank)
 		return true , rank
+
 	}
 	log.Print("username and password don't match")
 	//by default return false
