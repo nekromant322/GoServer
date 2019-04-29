@@ -17,6 +17,7 @@ func main() {
 	port := ":8080"
 	println("Server listen on port", port)
 	http.HandleFunc("/", views.MainPage)
+	http.HandleFunc("/teacher", views.TeacherPage)
 	http.HandleFunc("/test", views.TestPage)
 	http.HandleFunc("/login", views.CreateHandler)
 	http.HandleFunc("/androidlogin", views.AndroidLogin)

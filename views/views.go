@@ -67,10 +67,6 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		login := fmt.Sprintf("%v", session.Values["username"])
-
-		//var marks []db.Mark;
-		//marks = db.GetMarkInfo(fmt.Sprintf("%v", login)); //влзможно не нужно
-
 		rank, err := db.GetRank(login)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
@@ -102,7 +98,37 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+func TeacherPage(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Add("Content Type", "text/css")
+	session, _ := sessions.Store.Get(r, "session")
+	if session.Values["loggedin"] == "true" {
+		tmpl, err := template.ParseFiles("templates/profile.html") //need to parse frames.html
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	login := fmt.Sprintf("%v", session.Values["username"])
 
+
+
+	_, err = db.GetRank(login)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+
+		err = tmpl.Execute(w, nil)
+
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	} else {
+		http.Redirect(w, r, "/login", 302)
+	}
+
+}
 func TestPage(w http.ResponseWriter, r *http.Request) {
 	/*marks := []Mark{Mark{"8160327", 1, 6, 2, "SB1230"}, Mark{"8160327", 2, 5, 0, "SB1230"}}
 	tmpl, err := template.ParseFiles("templates/index.html")
@@ -157,7 +183,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		//Need to fix
 		if(rank == 1){
-		http.ServeFile(w, r, "templates/frames.html")
+			http.Redirect(w, r, "/teacher", 301)
 		}
 		} else {
 			http.ServeFile(w, r, "templates/login_fail.html")
