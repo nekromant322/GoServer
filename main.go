@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -16,13 +17,16 @@ func main() {
 	println("Check Hash :", hash)
 	port := ":8080"
 	println("Server listen on port", port)
-	http.HandleFunc("/", views.MainPage)
-	http.HandleFunc("/teacher", views.TeacherPage)
-	http.HandleFunc("/test", views.TestPage)
-	http.HandleFunc("/login", views.CreateHandler)
-	http.HandleFunc("/androidlogin", views.AndroidLogin)
-	http.Handle("/static/", http.FileServer(http.Dir("public")))
+	r := mux.NewRouter()
+	r.HandleFunc("/", views.MainPage)
+	r.HandleFunc("/teacher", views.TeacherPage)
+	r.HandleFunc("/test", views.TestPage)
+	r.HandleFunc("/login", views.CreateHandler)
+	r.HandleFunc("/androidlogin", views.AndroidLogin)
+	r.HandleFunc("/group/{group}", views.GroupsMarks)
 
+	http.Handle("/static/", http.FileServer(http.Dir("public")))
+	http.Handle("/", r)
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe", err)

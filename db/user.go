@@ -52,13 +52,13 @@ func ValidUser(login, password string) (bool, int) {
 	if rows.Next() {
 		err := rows.Scan(&passwordFromDB, &rank)
 		if err != nil {
-			return false , 0
+			return false, 0
 		}
 	}
 	//If the password matches, return true
 	if password == passwordFromDB {
 		log.Print("successfully validated with rank", rank)
-		return true , rank
+		return true, rank
 
 	}
 	log.Print("username and password don't match")

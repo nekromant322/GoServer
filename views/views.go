@@ -8,6 +8,9 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 //AndroidLogin is used to get all data about the user for android app
@@ -26,7 +29,7 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 		log.Println("Bad request")
 		http.Error(w, "Bad request", http.StatusBadRequest)
 	} else {
-		isUser , _:= db.ValidUser(login, password)
+		isUser, _ := db.ValidUser(login, password)
 		if !isUser {
 			log.Println("Unable to log user in")
 			http.Error(w, "Unable to log user in", http.StatusInternalServerError)
@@ -98,32 +101,60 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func GroupsMarks(w http.ResponseWriter, r *http.Request) {
+	session, _ := sessions.Store.Get(r, "session")
+	if session.Values["loggedin"] == "true" {
+		tmpl, err := template.ParseFiles("templates/group.html")
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		login := fmt.Sprintf("%v", session.Values["username"])
+
+		_, err = db.GetRank(login)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		var studentsMarks []db.StudentMarks
+		groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
+		studentsMarks = db.GetStudentMarks(groupNum)
+		err = tmpl.Execute(w, studentsMarks)
+
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+	} else {
+		http.Redirect(w, r, "/login", 302)
+	}
+}
+
 func TeacherPage(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
 		tmpl, err := template.ParseFiles("templates/profile.html") //need to parse frames.html
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-	login := fmt.Sprintf("%v", session.Values["username"])
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		login := fmt.Sprintf("%v", session.Values["username"])
 
+		_, err = db.GetRank(login)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		var teacherGroups []db.TeacherGroup
+		teacherGroups = db.GetTeacherGroupList(login)
+		err = tmpl.Execute(w, teacherGroups)
 
-
-	_, err = db.GetRank(login)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-
-		err = tmpl.Execute(w, nil)
-
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
 	} else {
 		http.Redirect(w, r, "/login", 302)
 	}
@@ -173,18 +204,18 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 		var check bool
 		var rank int
-		check , rank = db.ValidUser(login, password)
+		check, rank = db.ValidUser(login, password)
 		if check {
 			session.Values["loggedin"] = "true"
 			session.Values["username"] = login
 			session.Save(r, w)
-		if (rank == 0) {
-			http.Redirect(w, r, "/", 301)
-		}
-		//Need to fix
-		if(rank == 1){
-			http.Redirect(w, r, "/teacher", 301)
-		}
+			if rank == 0 {
+				http.Redirect(w, r, "/", 301)
+			}
+			//Need to fix
+			if rank == 1 {
+				http.Redirect(w, r, "/teacher", 301)
+			}
 		} else {
 			http.ServeFile(w, r, "templates/login_fail.html")
 		}
