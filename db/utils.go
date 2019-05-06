@@ -27,6 +27,40 @@ func (db Database) query(q string, args ...interface{}) (rows *sql.Rows) {
 	}
 	return rows
 }
+func (db Database) prepare(q string) (stmt *sql.Stmt) {
+	stmt, err := db.db.Prepare(q)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return stmt
+}
+func (db Database) begin() (tx *sql.Tx) {
+	tx, err := db.db.Begin()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return tx
+}
+func insertQuery(sql string, args ...interface{}) error {
+	log.Print("inside insert query")
+	SQL := database.prepare(sql)
+	tx := database.begin()
+	_, err = tx.Stmt(SQL).Exec(args...)
+	if err != nil {
+		log.Println("inserQuery: ", err)
+		tx.Rollback()
+	} else {
+		err = tx.Commit()
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		log.Println("Commit successful")
+	}
+	return err
+}
 func GetHash(login string, password string) string {
 
 	key := 1234567

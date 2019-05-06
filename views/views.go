@@ -105,7 +105,58 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
-		tmpl, err := template.ParseFiles("templates/group.html")
+		if r.Method == "GET" {
+			tmpl, err := template.ParseFiles("templates/group.html")
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+			login := fmt.Sprintf("%v", session.Values["username"])
+
+			_, err = db.GetRank(login)
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+			var groupMarks db.GroupMarks
+			groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
+			courseID, _ := db.GetCourseID(groupNum)
+			var shortLessonsInfo []db.ShortLessonInfo
+			shortLessonsInfo = db.GetLessonInfo(courseID)
+			groupMarks = db.GetStudentMarks(groupNum)
+			markData := struct {
+				CourseID   int
+				Marks      db.GroupMarks
+				LessonInfo []db.ShortLessonInfo
+			}{courseID, groupMarks, shortLessonsInfo}
+			err = tmpl.Execute(w, markData)
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+		} else {
+			err := r.ParseForm()
+			if err != nil {
+				log.Println(err)
+			}
+			groupNum, _ := mux.Vars(r)["group"]
+			for key, values := range r.Form {
+				err := db.SaveMarks(key, values, groupNum)
+				if err != nil {
+					log.Println(err)
+				}
+				http.Redirect(w, r, "/group/"+groupNum, 301)
+			}
+		}
+	} else {
+		http.Redirect(w, r, "/login", 302)
+	}
+}
+func Header(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Add("Content Type", "text/css")
+	session, _ := sessions.Store.Get(r, "session")
+	if session.Values["loggedin"] == "true" {
+		tmpl, err := template.ParseFiles("templates/header.html")
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return
@@ -117,10 +168,9 @@ func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-		var studentsMarks []db.StudentMarks
-		groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
-		studentsMarks = db.GetStudentMarks(groupNum)
-		err = tmpl.Execute(w, studentsMarks)
+		var teacherGroups []db.TeacherGroup
+		teacherGroups = db.GetTeacherGroupList(login)
+		err = tmpl.Execute(w, teacherGroups)
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
@@ -130,12 +180,71 @@ func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 }
+func Groups(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Add("Content Type", "text/css")
+	session, _ := sessions.Store.Get(r, "session")
+	if session.Values["loggedin"] == "true" {
+		tmpl, err := template.ParseFiles("templates/groups.html")
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		login := fmt.Sprintf("%v", session.Values["username"])
+
+		_, err = db.GetRank(login)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		var teacherGroups []db.TeacherGroup
+		teacherGroups = db.GetTeacherGroupList(login)
+		err = tmpl.Execute(w, teacherGroups)
+
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+	} else {
+		http.Redirect(w, r, "/login", 302)
+	}
+
+}
+
+func Profile(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Add("Content Type", "text/css")
+	session, _ := sessions.Store.Get(r, "session")
+	if session.Values["loggedin"] == "true" {
+		tmpl, err := template.ParseFiles("templates/profile.html")
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		login := fmt.Sprintf("%v", session.Values["username"])
+
+		_, err = db.GetRank(login)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		var teacherGroups []db.TeacherGroup
+		teacherGroups = db.GetTeacherGroupList(login)
+		err = tmpl.Execute(w, teacherGroups)
+
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+	} else {
+		http.Redirect(w, r, "/login", 302)
+	}
+
+}
 
 func TeacherPage(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
-		tmpl, err := template.ParseFiles("templates/profile.html") //need to parse frames.html
+		tmpl, err := template.ParseFiles("templates/frames.html") //need to parse frames.html
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return

@@ -24,6 +24,9 @@ func main() {
 	r.HandleFunc("/login", views.CreateHandler)
 	r.HandleFunc("/androidlogin", views.AndroidLogin)
 	r.HandleFunc("/group/{group}", views.GroupsMarks)
+	r.HandleFunc("/header", views.Header)
+	r.HandleFunc("/groups", views.Groups)
+	r.HandleFunc("/profile", views.Profile)
 
 	http.Handle("/static/", http.FileServer(http.Dir("public")))
 	http.Handle("/", r)

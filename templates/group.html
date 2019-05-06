@@ -3,73 +3,72 @@
  <head>
   <meta charset="utf-8">
   <title>group</title>
-  <link href="../static/style_main_admin.css" rel="stylesheet">
-  <link href="../static/style_modal_admin.css" rel="stylesheet">
-  <link href="../static/style_button.css" rel="stylesheet">
-  </head>
+  <link href="/static/style_main_admin.css" rel="stylesheet">
+  <link href="/static/style_modal_admin.css" rel="stylesheet">
+  <link href="/static/style_button.css" rel="stylesheet">
+	</head>
+	{{$courseID := .CourseID}}
   <body bgcolor="#ffffff">
-	<table width="1500px" border="1" class="marks">
-		<thead bgcolor="#bdc3e8">
-		<tr>
-		<td class="names" rowspan="2" width="200px">Ученик</td>
-		{{range (index . 1).Marks}}
-		<td colspan="1" contenteditable="true">Дата</td>
-		{{end}}
-		</tr>
-		<tr>
-		{{range (index . 1).Marks}}
-		<td><a href="#modall">Тема</a></td>
-		{{end}}
+		<div>
+			<form method="POST" action="/group/{{.Marks.Group}}">    
+				<table width="1500px" border="1" class="marks">
+					<thead bgcolor="#bdc3e8">
+					<tr>
+					<td class="names" rowspan="2" width="200px">Ученик</td>
+					{{range (index .Marks.StudentsMarks 1).Marks}}
+					<td colspan="1">{{.Lesson}}</td>
+					{{end}}
+					</tr>
+					<tr>
+					{{range .LessonInfo}}
+					<td><a href="#modal{{.LessonNumber}}">Тема</a></td>
+					{{end}}
 
-		
-		</tr>
-		</thead>
-		<tbody bgcolor="#ffffff">
-		{{range . }}
-		<tr>
-		<td class="names" rowspan="2" width="200px">{{.Name}}</td>
-		{{range .Marks}}
-		<td colspan="1" contenteditable="true">{{.ClassMark}}</td>
-		{{end}}
-		</tr>
-		
-		<tr class="DZ">
-		{{range .Marks}}
-		<td contenteditable="true">{{.HomeMark}}</td>		
-		{{end}}
-		</tr>
-		
-		{{end}}
+					
+					</tr>
+					</thead>
+					<tbody bgcolor="#ffffff">
+					{{range .Marks.StudentsMarks }}
+					<tr>
+					<td class="names" rowspan="2" width="200px">{{.Name}}</td>
+					{{$login := .Login}}
+					{{range .Marks}}
+					<td colspan="1" contenteditable="true"><input type="text" name="class_mark;{{$login}};{{.Lesson}}" value="{{.ClassMark}}" style="width:250px"/></td>
+					{{end}}
+					</tr>
+					
+					<tr class="DZ">
+					{{range .Marks}}
+					<td contenteditable="true"><input type="text" name="home_mark;{{$login}};{{.Lesson}}" value="{{.HomeMark}}" style="width:250px;background-color:#B5DAF2"/></td>		
+					{{end}}
+					</tr>
+					
+					{{end}}
 
-		</tbody>
-	</table>
-		<p><input type="text" class="new_group">
-		<button class="but_add"><i class="fontello">+</i></button></p>
-		
-	<button type="submit" class="but">Сохранить</button>
-
-	<!--		<div class="wrapper">
-				<input type="checkbox" id="button">
-				<div class="modal">
-					<label for="button" class="close"></label>
-				</div>
-			</div>
-			-->
+					</tbody>
+				</table>
+					<p><input type="text" class="new_group">
+					<button class="but_add"><i class="fontello">+</i></button></p>
+					
+				<button type="submit" class="but">Сохранить</button>
+			</form>
+		</div>
 			
-			
-			<div id="modall" class="modal">
-          	<div class="modal-wrapper">
-              <div class="CSS-modal-inner">
-                 <div class="modal-header">
-                  	<h3 class="modal-title" contenteditable="true">Тема</h3>
-                  	<a href="#close" title="Закрыть" class="close">×</a>
-                 </div>
-                 <div class="modal-text">    
-                   <p contenteditable="true">Домашнее задание</p>
-				   <button type="submit">Сохранить</button>
-                 </div>
-  			  </div>
-  			</div>	
-</div>
+		{{range .LessonInfo}}
+		<div id="modal{{.LessonNumber}}" class="modal">
+      <div class="modal-wrapper">
+        <div class="CSS-modal-inner">
+          <div class="modal-header">
+              <h3 class="modal-title" contenteditable="true"><input type="text" name="theme;{{$courseID}};{{.LessonNumber}}" value="{{.Theme}}" style="width:250px"/></h3>
+              <a href="#close" title="Закрыть" class="close">×</a>
+          </div>
+          <div class="modal-text">    
+						<textarea rows="4" cols="50" name="theme;{{$courseID}};{{.LessonNumber}}">{{.Homework}}</textarea>
+				  	<button type="submit">Сохранить</button>
+          </div>
+  			</div>
+  		</div>	
+		</div>
+		{{end}}
   </body>
   </html>
