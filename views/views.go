@@ -139,13 +139,14 @@ func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-			groupNum, _ := mux.Vars(r)["group"]
+			groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
+			courseID, _ := db.GetCourseID(groupNum)
 			for key, values := range r.Form {
-				err := db.SaveMarks(key, values, groupNum)
+				err := db.SaveLessonData(key, values, groupNum, courseID)
 				if err != nil {
 					log.Println(err)
 				}
-				http.Redirect(w, r, "/group/"+groupNum, 301)
+				http.Redirect(w, r, "/group/"+strconv.Itoa(groupNum), 301)
 			}
 		}
 	} else {

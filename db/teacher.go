@@ -105,16 +105,25 @@ func GetLessonInfo(courseID int) []ShortLessonInfo {
 	}
 	return shortLessonsInfo
 }
-func SaveMarks(key string, value []string, groupID string) error {
+func SaveLessonData(key string, value []string, groupID int, courseID int) error {
 	sKey := strings.Split(key, ";")
-	markType := sKey[0]
+	dataType := sKey[0]
 	login := sKey[1]
 	lesson := sKey[2]
-	mark := value[0]
-	marksSQL := "UPDATE MARKS SET " + markType + " = ? WHERE (login = ?) AND (lesson_number = ?) AND (groupID = ?)"
-	err := insertQuery(marksSQL, mark, login, lesson, groupID)
-	if err != nil {
-		return err
+	dataValue := value[0]
+	if dataType == "home_mark" || dataType == "class_mark" {
+		marksSQL := "UPDATE MARKS SET " + dataType + " = ? WHERE (login = ?) AND (lesson_number = ?) AND (groupID = ?)"
+		err := insertQuery(marksSQL, dataValue, login, lesson, groupID)
+		if err != nil {
+			return err
+		}
+	}
+	if dataType == "theme" || dataType == "homework" {
+		marksSQL := "UPDATE LESSONS SET " + dataType + " = ? WHERE (courseID = ?) AND (lesson_number = ?)"
+		err := insertQuery(marksSQL, dataValue, courseID, lesson)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

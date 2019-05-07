@@ -7,10 +7,12 @@
   <link href="/static/css/style_modal_admin.css" rel="stylesheet">
   <link href="/static/css/style_button.css" rel="stylesheet">
 	</head>
+	<form method="POST" action="/group/{{.Marks.Group}}">    
+
 	{{$courseID := .CourseID}}
   <body bgcolor="#ffffff">
+
 		<div>
-			<form method="POST" action="/group/{{.Marks.Group}}">    
 				<table width="1500px" border="1" class="marks">
 					<thead bgcolor="#bdc3e8">
 					<tr>
@@ -51,24 +53,27 @@
 					<button class="but_add"><i class="fontello">+</i></button></p>
 					
 				<button type="submit" class="but">Сохранить</button>
-			</form>
 		</div>
 			
 		{{range .LessonInfo}}
 		<div id="modal{{.LessonNumber}}" class="modal">
+				
       <div class="modal-wrapper">
         <div class="CSS-modal-inner">
-          <div class="modal-header">
-              <h3 class="modal-title" contenteditable="true"><input type="text" name="theme;{{$courseID}};{{.LessonNumber}}" value="{{.Theme}}" style="width:250px"/></h3>
-              <a href="#close" title="Закрыть" class="close">×</a>
-          </div>
-          <div class="modal-text">    
-						<textarea rows="4" cols="50" name="theme;{{$courseID}};{{.LessonNumber}}">{{.Homework}}</textarea>
-				  	<button type="submit">Сохранить</button>
-          </div>
+						<div class="modal-header">
+								<h3 class="modal-title" contenteditable="true"><input type="text" name="theme;_;{{.LessonNumber}}" value="{{.Theme}}" style="width:250px"/></h3>
+								<a href="#close" title="Закрыть" class="close">×</a>
+						</div>
+						<div class="modal-text">    
+							<textarea rows="4" cols="50" name="homework;_;{{.LessonNumber}}">{{.Homework}}</textarea>
+					<!--		<button type="submit">Сохранить</button>-->
+						</div>
   			</div>
   		</div>	
 		</div>
 		{{end}}
-  </body>
+
+	</body>
+</form>
+
   </html>
