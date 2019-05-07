@@ -100,12 +100,13 @@ func GetRealName(login string) (nameFromDB string, err error) {
 //GetGroups returns a slice of groupIDs for a user
 func GetGroups(login string) []int {
 	var groups []int
-	var groupID int
 	groupsSQL := "SELECT groupID FROM MARKS WHERE login =? GROUP BY groupID"
 	log.Print("Getting groups of user ", login)
 	rows := database.query(groupsSQL, login)
 	defer rows.Close()
 	for rows.Next() {
+		var groupID int
+
 		rows.Scan(&groupID)
 		groups = append(groups, groupID)
 	}
@@ -115,15 +116,14 @@ func GetGroups(login string) []int {
 //GetGroupInfo returns all info related to the user in certain group (marks, homework, course info)
 func GetGroupInfo(group int, login string) GroupInfo {
 	var groupInfo GroupInfo
-	var lessonInfo LessonInfo
 	var lessonsInfo []LessonInfo
 	var eventsInfo []Event
-	var event Event
 	lessonSQL := "SELECT MARKS.lesson_number, theme, homework, class_mark, home_mark FROM LESSONS, MARKS, GROUPS WHERE (GROUPS.groupID = ?) AND (GROUPS.courseID=LESSONS.courseID) AND (MARKS.groupID =?) AND (LESSONS.lesson_number = MARKS.lesson_number) AND (login = ?);"
 	log.Print("Getting lessons for group ", group)
 	rows := database.query(lessonSQL, group, group, login)
 	defer rows.Close()
 	for rows.Next() {
+		var lessonInfo LessonInfo
 		rows.Scan(&lessonInfo.LessonNumber, &lessonInfo.Theme, &lessonInfo.Homework, &lessonInfo.ClassMark, &lessonInfo.HomeMark)
 		lessonsInfo = append(lessonsInfo, lessonInfo)
 	}
@@ -140,6 +140,7 @@ func GetGroupInfo(group int, login string) GroupInfo {
 	rows = database.query(eventsSQL, group)
 	defer rows.Close()
 	for rows.Next() {
+		var event Event
 		rows.Scan(&event.EventText, &event.Date)
 		eventsInfo = append(eventsInfo, event)
 	}
@@ -152,8 +153,8 @@ func GetMarkInfo(login string) []Mark {
 	rows := database.query(markSQL, login)
 	defer rows.Close()
 	var marks []Mark
-	var mark Mark
 	for rows.Next() {
+		var mark Mark
 		rows.Scan(&mark.Login, &mark.Lesson_number, &mark.Class_mark, &mark.Home_mark, &mark.Group)
 		marks = append(marks, mark)
 	}

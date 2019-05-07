@@ -43,14 +43,14 @@ type FullTeacherInfo struct {
 
 func GetStudentMarks(groupID int) GroupMarks {
 	var studentsMarks []StudentMarks
-	var studentMarks StudentMarks
 	var logins []string
-	var login string
 	studentSQL := "SELECT DISTINCT login FROM MARKS WHERE groupID=?"
 	log.Print("Getting users for group ", groupID)
 	rows := database.query(studentSQL, groupID)
 	defer rows.Close()
 	for rows.Next() {
+		var studentMarks StudentMarks
+		var login string
 		rows.Scan(&login)
 		logins = append(logins, login)
 		studentMarks.Login = login
@@ -66,8 +66,8 @@ func GetStudentMarks(groupID int) GroupMarks {
 		rows = database.query(markSQL, login, groupID)
 		defer rows.Close()
 		var lessonsMarks []LessonMarks
-		var lessonMarks LessonMarks
 		for rows.Next() {
+			var lessonMarks LessonMarks
 			rows.Scan(&lessonMarks.Lesson, &lessonMarks.ClassMark, &lessonMarks.HomeMark)
 			lessonsMarks = append(lessonsMarks, lessonMarks)
 		}
@@ -98,8 +98,8 @@ func GetLessonInfo(courseID int) []ShortLessonInfo {
 	log.Print("Getting course info for course ", courseID)
 	rows := database.query(groupsSQL, courseID)
 	defer rows.Close()
-	var shortLessonInfo ShortLessonInfo
 	for rows.Next() {
+		var shortLessonInfo ShortLessonInfo
 		rows.Scan(&shortLessonInfo.LessonNumber, &shortLessonInfo.Homework, &shortLessonInfo.Theme)
 		shortLessonsInfo = append(shortLessonsInfo, shortLessonInfo)
 	}
@@ -135,8 +135,8 @@ func GetTeacherGroupList(login string) []TeacherGroup {
 	log.Print("Getting groups of teacher ", login)
 	rows := database.query(groupsSQL, login)
 	defer rows.Close()
-	var teacherGroup TeacherGroup
 	for rows.Next() {
+		var teacherGroup TeacherGroup
 		rows.Scan(&teacherGroup.GroupID, &teacherGroup.Group, &teacherGroup.Course, &teacherGroup.Info)
 		teacherGroups = append(teacherGroups, teacherGroup)
 	}

@@ -16,14 +16,14 @@
 				<table width="1500px" border="1" class="marks">
 					<thead bgcolor="#bdc3e8">
 					<tr>
-					<td class="names" rowspan="2" width="200px">Ученик</td>
-					{{range (index .Marks.StudentsMarks 1).Marks}}
-					<td colspan="1">{{.Lesson}}</td>
+					<td class="names" rowspan="2" width="100px">Ученик</td>
+					{{range .LessonInfo}}
+					<td colspan="1">{{.LessonNumber}}</td>
 					{{end}}
 					</tr>
 					<tr>
 					{{range .LessonInfo}}
-					<td><a href="#modal{{.LessonNumber}}">Тема</a></td>
+					<td><a href="#modal{{.LessonNumber}}">{{if .Theme}}{{.Theme}}{{else}}Тема{{end}}</a></td> <!--добавить фиксированную ширину-->
 					{{end}}
 
 					
@@ -35,13 +35,13 @@
 					<td class="names" rowspan="2" width="200px">{{.Name}}</td>
 					{{$login := .Login}}
 					{{range .Marks}}
-					<td colspan="1" contenteditable="true"><input type="text" name="class_mark;{{$login}};{{.Lesson}}" value="{{.ClassMark}}" style="width:250px"/></td>
+					<td colspan="1"><input type="text" name="class_mark;{{$login}};{{.Lesson}}" value="{{if .ClassMark}}{{.ClassMark}}{{else}}-{{end}}" style="width:250px"/></td>
 					{{end}}
 					</tr>
 					
 					<tr class="DZ">
 					{{range .Marks}}
-					<td contenteditable="true"><input type="text" name="home_mark;{{$login}};{{.Lesson}}" value="{{.HomeMark}}" style="width:250px;background-color:#B5DAF2"/></td>		
+					<td><input type="text" name="home_mark;{{$login}};{{.Lesson}}" value="{{if .HomeMark}}{{.HomeMark}}{{else}}-{{end}}" style="width:250px;background-color:#B5DAF2"/></td>		
 					{{end}}
 					</tr>
 					
