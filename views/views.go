@@ -90,6 +90,10 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 			}
 			userInfo.GroupsInfo = groupsInfo
 			err = tmpl.Execute(w, userInfo)
+		} else {
+			if rank == 1 {
+				http.Redirect(w, r, "/teacher", 302)
+			}
 		}
 
 		if err != nil {
