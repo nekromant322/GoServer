@@ -27,6 +27,7 @@ func main() {
 	r.HandleFunc("/header", views.Header)
 	r.HandleFunc("/groups", views.Groups)
 	r.HandleFunc("/profile", views.Profile)
+	r.HandleFunc("/logout", views.LogoutFunc)
 
 	http.Handle("/static/", http.FileServer(http.Dir("public")))
 	http.Handle("/", r)

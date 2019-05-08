@@ -17,11 +17,8 @@
 			<label for="tab2" title="Оценки">Оценки</label>
 
 			<input id="tab3" type="radio" name="tabs">
-			<label for="tab3" title="Новости">Уведомления</label>
-	
-			<input id="tab99" type="radio" name="tabs">
-			<label for="tab99" title="Уведомления">Новости</label>
-	
+			<label for="tab3" title="Уведомления">Уведомления</label>
+
 			<section id="content-tab1">
 				<table width="100%" cellspacing="0" cellpadding="0">
 					<tr> 
@@ -84,6 +81,9 @@
 				</table>
 				{{end}}
 			</section>
+			<form class="head" action="/logout" target="_top" method="post">
+				<input type="submit" value="Выйти">
+			  </form>
 		</div>
   </body>
 </html>
