@@ -13,6 +13,7 @@ type TeacherGroup struct {
 	Group   string
 	Course  string
 	Info    string
+	Events  []Event
 }
 type InfoMarks struct {
 	Name string
@@ -56,19 +57,19 @@ func GetStudentMarks(groupID int) GroupMarks {
 		studentMarks.Login = login
 		studentSQL = "SELECT real_name FROM USERS WHERE login=?"
 		log.Print("Getting real_name for user ", login)
-		rows := database.query(studentSQL, login)
-		defer rows.Close()
-		for rows.Next() {
-			rows.Scan(&studentMarks.Name)
+		rowsLogin := database.query(studentSQL, login)
+		defer rowsLogin.Close()
+		for rowsLogin.Next() {
+			rowsLogin.Scan(&studentMarks.Name)
 		}
 		markSQL := "SELECT lesson_number, class_mark, home_mark FROM MARKS WHERE (login = ?)AND (groupID=?) ORDER BY lesson_number ASC"
 		log.Print("Getting marks for user ", login, groupID)
-		rows = database.query(markSQL, login, groupID)
-		defer rows.Close()
+		rowsMarks := database.query(markSQL, login, groupID)
+		defer rowsMarks.Close()
 		var lessonsMarks []LessonMarks
-		for rows.Next() {
+		for rowsMarks.Next() {
 			var lessonMarks LessonMarks
-			rows.Scan(&lessonMarks.Lesson, &lessonMarks.ClassMark, &lessonMarks.HomeMark)
+			rowsMarks.Scan(&lessonMarks.Lesson, &lessonMarks.ClassMark, &lessonMarks.HomeMark)
 			lessonsMarks = append(lessonsMarks, lessonMarks)
 		}
 		studentMarks.Marks = lessonsMarks
@@ -138,7 +139,20 @@ func GetTeacherGroupList(login string) []TeacherGroup {
 	for rows.Next() {
 		var teacherGroup TeacherGroup
 		rows.Scan(&teacherGroup.GroupID, &teacherGroup.Group, &teacherGroup.Course, &teacherGroup.Info)
+		eventsSQL := "SELECT event, date FROM EVENTS WHERE groupID=? ORDER BY rowid DESC LIMIT 10"
+		log.Print("Getting events for group ", teacherGroup.GroupID)
+		rowsEvent := database.query(eventsSQL, teacherGroup.GroupID)
+		defer rowsEvent.Close()
+		var eventsInfo []Event
+		for rowsEvent.Next() {
+			var event Event
+			rowsEvent.Scan(&event.EventText, &event.Date)
+			eventsInfo = append(eventsInfo, event)
+		}
+		teacherGroup.Events = eventsInfo
 		teacherGroups = append(teacherGroups, teacherGroup)
+
 	}
+
 	return teacherGroups
 }

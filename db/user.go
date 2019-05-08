@@ -106,7 +106,6 @@ func GetGroups(login string) []int {
 	defer rows.Close()
 	for rows.Next() {
 		var groupID int
-
 		rows.Scan(&groupID)
 		groups = append(groups, groupID)
 	}
