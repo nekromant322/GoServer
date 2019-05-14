@@ -29,7 +29,11 @@
 					</td>
 					<td width="300px" align="left">
 						<h2><b>Иванов Иван Иванович</b></h2>
-						<h3>E-mail: ivan@gmail.com</h3>
+						<!-- ниже переделать надо -->
+						<h4>E-mail: <a contenteditable="true">vk.com/ivan</a></h4>
+						<h4>VK: <a contenteditable="true">ivan@gmail.com</a></h4>
+						<h4>GitHub: <a contenteditable="true">github.com/ivan_mega</a></h4>
+						<button type="submit" class="but_mini">Ok</button>
 					</td>
 							</tr>
 				</table>
@@ -53,7 +57,7 @@
 								{{end}}
 								<p>Текст уведомления:</p>
 								<p><textarea rows="10" cols="45" name="comment"></textarea></p>
-								<p><input type="submit" ></p>
+								<p><input type="submit" class="but"></p>
 							</form>
 						</td>
 						<td>
@@ -72,7 +76,7 @@
 										<td>
 											<label for="button" class="label">{{.EventText}}</label>	
 										</td>
-										<td align="center"><button>x</button></td>
+										<td align="center"><button class="but_mini">x</button></td>
 									</tr>
 									{{end}}
 								</tbody>
