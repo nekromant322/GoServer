@@ -3,7 +3,7 @@
  <head>
   <meta charset="utf-8">
   <title>group</title>
-  <link href="/static/css/style_main_admin.css" rel="stylesheet">
+	 <link href="/static/css/style_main_admin.css" rel="stylesheet">
   <link href="/static/css/style_modal_admin.css" rel="stylesheet">
   <link href="/static/css/style_button.css" rel="stylesheet">
 	</head>
@@ -16,14 +16,14 @@
 				<table width="1500px" border="1" class="marks">
 					<thead bgcolor="#bdc3e8">
 					<tr>
-					<td class="names" rowspan="2" width="200px">Ученик</td>
+					<td class="names" rowspan="2">Ученик</td>
 					{{range .LessonInfo}}
 					<td colspan="1">{{.LessonNumber}}</td>
 					{{end}}
 					</tr>
 					<tr>
 					{{range .LessonInfo}}
-					<td><a href="#modal{{.LessonNumber}}">{{if .Theme}}{{.Theme}}{{else}}Тема{{end}}</a></td> <!--добавить фиксированную ширину-->
+					<td class="theme"><a href="#modal{{.LessonNumber}}">{{if .Theme}}{{.Theme}}{{else}}Тема{{end}}</a></td> <!--добавить фиксированную ширину-->
 					{{end}}
 
 					
@@ -46,13 +46,18 @@
 					</tr>
 					
 					{{end}}
-
+					<tr>
+						<td class="names" width="200px">
+							<p><input type="text" class="new_group"><button class="but_mini">+</button></p>
+						</td>
+					</tr>
+					<tr class="names" width="200px">
+						<td class="for_buttons" width="200px">
+							<button type="submit" class="but">Сохранить</button>
+						</td>
+					</tr>
 					</tbody>
 				</table>
-					<p><input type="text" class="new_group">
-					<button class="but_add"><i class="fontello">+</i></button></p>
-					
-				<button type="submit" class="but">Сохранить</button>
 		</div>
 			
 		{{range .LessonInfo}}
@@ -66,7 +71,7 @@
 						</div>
 						<div class="modal-text">    
 							<textarea rows="4" cols="50" name="homework;_;{{.LessonNumber}}">{{.Homework}}</textarea>
-					<!--		<button type="submit">Сохранить</button>-->
+					<!--		<button type="submit" class="but">Подтвердить</button>-->
 						</div>
   			</div>
   		</div>	
