@@ -14,6 +14,7 @@ type UserInfo struct {
 type Event struct {
 	EventText string `json:"Event"`
 	Date      string `json:"Date"`
+	EventID   int    `json:"EventID"`
 }
 type GroupInfo struct {
 	Events     []Event      `json:"Events"`

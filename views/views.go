@@ -139,16 +139,18 @@ func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		} else {
-			err := r.ParseForm()
-			if err != nil {
-				log.Println(err)
-			}
-			groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
-			courseID, _ := db.GetCourseID(groupNum)
-			for key, values := range r.Form {
-				err := db.SaveLessonData(key, values, groupNum, courseID)
+			if r.Method == "POST" {
+				err := r.ParseForm()
 				if err != nil {
 					log.Println(err)
+				}
+				groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
+				courseID, _ := db.GetCourseID(groupNum)
+				for key, values := range r.Form {
+					err := db.SaveLessonData(key, values, groupNum, courseID)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 				http.Redirect(w, r, "/group/"+strconv.Itoa(groupNum), 301)
 			}
@@ -219,25 +221,53 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Content Type", "text/css")
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
-		tmpl, err := template.ParseFiles("templates/profile.html")
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-		login := fmt.Sprintf("%v", session.Values["username"])
+		if r.Method == "GET" {
+			tmpl, err := template.ParseFiles("templates/profile.html")
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+			login := fmt.Sprintf("%v", session.Values["username"])
 
-		_, err = db.GetRank(login)
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-		var teacherGroups []db.TeacherGroup
-		teacherGroups = db.GetTeacherGroupList(login)
-		err = tmpl.Execute(w, teacherGroups)
+			_, err = db.GetRank(login)
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+			var teacherGroups []db.TeacherGroup
+			teacherGroups = db.GetTeacherGroupList(login)
+			err = tmpl.Execute(w, teacherGroups)
 
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+		} else {
+			if r.Method == "POST" {
+				err := r.ParseForm()
+				if err != nil {
+					log.Println(err)
+				}
+				eventID := r.FormValue("delete")
+				err = db.DeleteEvent(eventID)
+				if err != nil {
+					log.Println(err)
+				}
+				var groupIDs []string
+				var eventText string
+				for key, values := range r.Form { // range over map
+					for _, value := range values { // range over []string
+						if key == "groupCheck" {
+							groupIDs = append(groupIDs, value)
+						}
+						if key == "eventText" {
+							eventText = value
+						}
+					}
+				}
+				db.SaveEventData(groupIDs, eventText)
+				http.Redirect(w, r, "/profile", 301)
+			}
 		}
 	} else {
 		http.Redirect(w, r, "/login", 302)

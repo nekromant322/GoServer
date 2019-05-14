@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -139,20 +140,40 @@ func GetTeacherGroupList(login string) []TeacherGroup {
 	for rows.Next() {
 		var teacherGroup TeacherGroup
 		rows.Scan(&teacherGroup.GroupID, &teacherGroup.Group, &teacherGroup.Course, &teacherGroup.Info)
-		eventsSQL := "SELECT event, date FROM EVENTS WHERE groupID=? ORDER BY rowid DESC LIMIT 10"
+		eventsSQL := "SELECT eventID, event, date FROM EVENTS WHERE groupID=? ORDER BY rowid DESC LIMIT 10"
 		log.Print("Getting events for group ", teacherGroup.GroupID)
 		rowsEvent := database.query(eventsSQL, teacherGroup.GroupID)
 		defer rowsEvent.Close()
 		var eventsInfo []Event
 		for rowsEvent.Next() {
 			var event Event
-			rowsEvent.Scan(&event.EventText, &event.Date)
+			rowsEvent.Scan(&event.EventID, &event.EventText, &event.Date)
 			eventsInfo = append(eventsInfo, event)
 		}
 		teacherGroup.Events = eventsInfo
 		teacherGroups = append(teacherGroups, teacherGroup)
 
 	}
-
 	return teacherGroups
+}
+
+func DeleteEvent(id string) error {
+	eventDelSQL := "DELETE FROM EVENTS WHERE eventID=?"
+	err := insertQuery(eventDelSQL, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func SaveEventData(groupIDs []string, eventText string) error {
+	for _, groupID := range groupIDs {
+		currentTime := time.Now()
+		eventSQL := "INSERT INTO EVENTS (groupID, date, event) VALUES (?,?,?)"
+		err := insertQuery(eventSQL, groupID, currentTime.Format("2006-01-02"), eventText)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

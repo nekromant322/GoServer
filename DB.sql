@@ -32,6 +32,7 @@ CREATE TABLE LESSONS(
     homework        TEXT
 );
 CREATE TABLE EVENTS(
+    eventID         INTEGER NOT NULL PRIMARY KEY,
     groupID         INTEGER NOT NULL,
     date            TEXT NOT NULL,
     event           TEXT NOT NULL
