@@ -5,6 +5,7 @@
   <title>ЦКО МИЭТ</title>
 	<link href="/static/css/style_main.css" rel="stylesheet">
 	<link href="/static/css/syle_modal.css" rel="stylesheet">
+	<link href="/static/css/style_modal_admin.css" rel="stylesheet">
 	</head>
   
   <body>
@@ -30,8 +31,9 @@
 						<td  align="left">
 							{{range .GroupsInfo}}
 							<h2><p>Курс: <b>{{.CourseName}}</b></h2>
-							<h4>Преподаватель: {{.Teacher}}</h4>
 							<h4>{{.Info}}</h4>
+							<h4>Преподаватель: {{.Teacher}}</h4>
+							<h4> Контактная информация: {{.TeacherInfo}}</h4>
 							{{end}}
 					</tr>
 				</table>
@@ -47,12 +49,11 @@
 						<td width="100">ДЗ</td>
 					</tr> </thead> 
 					<tbody style="background: #b8dcff">
+						{{$ID := .GroupID}}
 						{{range .Lessons}}
 						<tr>
 							<td>   {{.LessonNumber}}  </td>
-							<td>
-								<label for="button" class="label">{{.Theme}}</label>
-								</td>
+							<td class="theme"><a href="#modal{{$ID}}_{{.LessonNumber}}">{{if .Theme}}{{.Theme}}{{else}}Тема{{end}}</a></td>
 							<td>    {{.ClassMark}} </td>
 							<td>   {{.HomeMark}}</td>
 						</tr>
@@ -85,5 +86,21 @@
 				<input type="submit" value="Выйти">
 			  </form>
 		</div>
+	{{range .GroupsInfo}}
+		{{$ID := .GroupID}}
+		{{range .Lessons}}
+         <div id="modal{{$ID}}_{{.LessonNumber}}" class="modal">
+            <div class="modal-wrapper">
+               <div class="CSS-modal-inner">
+                  <div class="modal-header">
+                     <h3 class="modal-title">{{.Theme}}</h3>
+                     <a href="#close" title="Закрыть" class="close">×</a>
+                  </div>
+                  <div class="modal-text">{{.Homework}}</div>
+               </div>
+            </div>
+         </div>
+		 {{end}}
+	{{end}}
   </body>
 </html>

@@ -17,13 +17,15 @@ type Event struct {
 	EventID   int    `json:"EventID"`
 }
 type GroupInfo struct {
-	Events     []Event      `json:"Events"`
-	Lessons    []LessonInfo `json:"Lessons"`
-	Group      string       `json:"GroupName"`
-	CourseName string       `json:"CourseName"`
-	Teacher    string       `json:"Teacher"`
-	Amount     int          `json:"Amount"`
-	Info       string       `json:"Info"`
+	Events      []Event      `json:"Events"`
+	Lessons     []LessonInfo `json:"Lessons"`
+	GroupID     int          `json:"GroupID"`
+	Group       string       `json:"GroupName"`
+	CourseName  string       `json:"CourseName"`
+	Teacher     string       `json:"Teacher"`
+	TeacherInfo string       `json:"TeacherInfo"`
+	Amount      int          `json:"Amount"`
+	Info        string       `json:"Info"`
 }
 type LessonInfo struct {
 	LessonNumber int    `json:"LessonNumber"`
@@ -85,9 +87,9 @@ func GetRank(login string) (rankFromDB int8, err error) {
 
 //GetRealName will return the name of a user by his login
 func GetRealName(login string) (nameFromDB string, err error) {
-	rankSQL := "SELECT real_name FROM USERS WHERE login =?"
+	nameSQL := "SELECT real_name FROM USERS WHERE login =?"
 	log.Print("Getting real name for user ", login)
-	rows := database.query(rankSQL, login)
+	rows := database.query(nameSQL, login)
 	defer rows.Close()
 	if rows.Next() {
 		err := rows.Scan(&nameFromDB)
@@ -96,6 +98,21 @@ func GetRealName(login string) (nameFromDB string, err error) {
 		}
 	}
 	return nameFromDB, nil
+}
+
+//GetBonusInfo will return the bonus_info of a user by his login
+func GetBonusInfo(login string) (infoFromDB string, err error) {
+	infoSQL := "SELECT bonus_info FROM USERS WHERE login =?"
+	log.Print("Getting bonus_info for user ", login)
+	rows := database.query(infoSQL, login)
+	defer rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&infoFromDB)
+		if err != nil {
+			return "", fmt.Errorf("No such user")
+		}
+	}
+	return infoFromDB, nil
 }
 
 //GetGroups returns a slice of groupIDs for a user
@@ -118,6 +135,7 @@ func GetGroupInfo(group int, login string) GroupInfo {
 	var groupInfo GroupInfo
 	var lessonsInfo []LessonInfo
 	var eventsInfo []Event
+	groupInfo.GroupID = group
 	lessonSQL := "SELECT MARKS.lesson_number, theme, homework, class_mark, home_mark FROM LESSONS, MARKS, GROUPS WHERE (GROUPS.groupID = ?) AND (GROUPS.courseID=LESSONS.courseID) AND (MARKS.groupID =?) AND (LESSONS.lesson_number = MARKS.lesson_number) AND (login = ?);"
 	log.Print("Getting lessons for group ", group)
 	rows := database.query(lessonSQL, group, group, login)
@@ -128,12 +146,12 @@ func GetGroupInfo(group int, login string) GroupInfo {
 		lessonsInfo = append(lessonsInfo, lessonInfo)
 	}
 	groupInfo.Lessons = lessonsInfo
-	groupSQL := "SELECT group_name, name, real_name, info, amount FROM GROUPS, COURSES, USERS WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID) AND (teacher=USERS.login)"
+	groupSQL := "SELECT group_name, name, real_name, info, bonus_info, amount FROM GROUPS, COURSES, USERS WHERE (groupID =?) AND (GROUPS.courseID = COURSES.courseID) AND (teacher=USERS.login)"
 	log.Print("Getting group info for group ", group)
 	rows = database.query(groupSQL, group)
 	defer rows.Close()
 	if rows.Next() {
-		rows.Scan(&groupInfo.Group, &groupInfo.CourseName, &groupInfo.Teacher, &groupInfo.Info, &groupInfo.Amount)
+		rows.Scan(&groupInfo.Group, &groupInfo.CourseName, &groupInfo.Teacher, &groupInfo.Info, &groupInfo.TeacherInfo, &groupInfo.Amount)
 	}
 	eventsSQL := "SELECT event, date FROM EVENTS WHERE groupID=? ORDER BY rowid DESC LIMIT 10"
 	log.Print("Getting events for group ", group)

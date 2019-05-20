@@ -29,19 +29,16 @@
 						<img src="/static/images/ava.jpg" alt="" class="round" width ="200px" vspace="10" hspace="40" align="right">
 					</td>
 					<td width="300px" align="left">
-						<h2><b>Иванов Иван Иванович</b></h2>
-						<!-- ниже переделать надо -->
-						<h4>E-mail: <a contenteditable="true">vk.com/ivan</a></h4>
-						<h4>VK: <a contenteditable="true">ivan@gmail.com</a></h4>
-						<h4>GitHub: <a contenteditable="true">github.com/ivan_mega</a></h4>
-						<button type="submit" class="but_mini">Ok</button>
+						<h2><b>{{.Teacher}}</b></h2>
+						<h4><input type="text" name="teacher_info" value="{{.TeacherInfo}}"/></h4>
+						<button class="but_mini" type="submit" value="save_info" name="submit">Ok</button>
 					</td>
-							</tr>
+				</tr>
 				</table>
 			</section>
 			<section id="content-tab2">	
 						<h2><p>Ведет курсы: </p></h2>
-						{{range . }}
+						{{range .TeacherGroups }}
 						<h4><a href="/group/{{.GroupID}}">{{.Group}} {{.Course}} {{.Info}}</a></h4>
 						{{end}}
 						<p><input type="text" class="new_group">
@@ -53,16 +50,16 @@
 						<td width="50%">
 							<form action="">
 								<p>Выберите группы:</p>
-								{{range . }}
+								{{range .TeacherGroups }}
 								<p><input type="checkbox" name="groupCheck" value="{{.GroupID}}">{{.Group}}<Br>
 								{{end}}
 								<p>Текст уведомления:</p>
 								<p><textarea rows="10" cols="45" name="eventText"></textarea></p>
-								<p><input type="submit" name="send" value="Submit"></p>
+								<p><button class="but_mini" type="submit" name="submit" value="save_event">Отправить</button></p>
 							</form>
 						</td>
 						<td>
-							{{range .}}
+							{{range .TeacherGroups}}
 							{{.Group}} {{.Course}} {{.Info}}
 							<table align = "top" width="100%"><!--style=" font-family: Sans-Serif; text-align: center; border-collapse: separate; border-spacing: 5px; border: 16px solid #ECE9E0; border-radius: 20px;"--> 
 								<thead style="background: #e7e7e7"><tr> 
@@ -77,7 +74,7 @@
 										<td>
 											<label for="button" class="label">{{.EventText}}</label>	
 										</td>
-										<td align="center"><button class="but_mini"type="submit" value="{{.EventID}}" name="delete">x</button></td>
+										<td align="center"><button class="but_mini" type="submit" value="{{.EventID}}" name="submit">x</button></td>
 									</tr>
 									{{end}}
 								</tbody>

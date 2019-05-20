@@ -110,19 +110,16 @@ func GetLessonInfo(courseID int) []ShortLessonInfo {
 func SaveLessonData(key string, value []string, groupID int, courseID int) error {
 	sKey := strings.Split(key, ";")
 	dataType := sKey[0]
-	login := sKey[1]
-	lesson := sKey[2]
-	dataValue := value[0]
 	if dataType == "home_mark" || dataType == "class_mark" {
 		marksSQL := "UPDATE MARKS SET " + dataType + " = ? WHERE (login = ?) AND (lesson_number = ?) AND (groupID = ?)"
-		err := insertQuery(marksSQL, dataValue, login, lesson, groupID)
+		err := insertQuery(marksSQL, value[0], sKey[1], sKey[2], groupID)
 		if err != nil {
 			return err
 		}
 	}
 	if dataType == "theme" || dataType == "homework" {
 		marksSQL := "UPDATE LESSONS SET " + dataType + " = ? WHERE (courseID = ?) AND (lesson_number = ?)"
-		err := insertQuery(marksSQL, dataValue, courseID, lesson)
+		err := insertQuery(marksSQL, value[0], courseID, sKey[2])
 		if err != nil {
 			return err
 		}
@@ -174,6 +171,14 @@ func SaveEventData(groupIDs []string, eventText string) error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+func SaveTeacherBonusInfo(login string, bonusInfo string) error {
+	infoSQL := "UPDATE USERS SET bonus_info=? WHERE login=?"
+	err := insertQuery(infoSQL, bonusInfo, login)
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -146,10 +147,23 @@ func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 				}
 				groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
 				courseID, _ := db.GetCourseID(groupNum)
-				for key, values := range r.Form {
-					err := db.SaveLessonData(key, values, groupNum, courseID)
-					if err != nil {
-						log.Println(err)
+				if r.FormValue("submit") == "save_marks" {
+					for key, values := range r.Form {
+						if strings.Split(key, ";")[0] == "home_mark" || strings.Split(key, ";")[0] == "class_mark" {
+							err := db.SaveLessonData(key, values, groupNum, courseID)
+							if err != nil {
+								log.Println(err)
+							}
+						}
+					}
+				} else {
+					for key, values := range r.Form {
+						if (strings.Split(key, ";")[0] == "homework" || strings.Split(key, ";")[0] == "theme") && strings.Split(key, ";")[2] == r.FormValue("submit") {
+							err := db.SaveLessonData(key, values, groupNum, courseID)
+							if err != nil {
+								log.Println(err)
+							}
+						}
 					}
 				}
 				http.Redirect(w, r, "/group/"+strconv.Itoa(groupNum), 301)
@@ -236,7 +250,18 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 			}
 			var teacherGroups []db.TeacherGroup
 			teacherGroups = db.GetTeacherGroupList(login)
-			err = tmpl.Execute(w, teacherGroups)
+			name, _ := db.GetRealName(login)
+			info, _ := db.GetBonusInfo(login)
+			teacherInfoAndGroups := struct {
+				TeacherGroups []db.TeacherGroup
+				Teacher       string
+				TeacherInfo   string
+			}{
+				teacherGroups,
+				name,
+				info,
+			}
+			err = tmpl.Execute(w, teacherInfoAndGroups)
 
 			if err != nil {
 				http.Error(w, err.Error(), 400)
@@ -248,25 +273,34 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Println(err)
 				}
-				eventID := r.FormValue("delete")
-				err = db.DeleteEvent(eventID)
-				if err != nil {
-					log.Println(err)
-				}
-				var groupIDs []string
-				var eventText string
-				for key, values := range r.Form { // range over map
-					for _, value := range values { // range over []string
-						if key == "groupCheck" {
-							groupIDs = append(groupIDs, value)
-						}
-						if key == "eventText" {
-							eventText = value
+				switch r.FormValue("submit") {
+				case "save_info":
+					teacherInfo := r.FormValue("teacher_info")
+					login := fmt.Sprintf("%v", session.Values["username"])
+					db.SaveTeacherBonusInfo(login, teacherInfo)
+					http.Redirect(w, r, "/profile", 301)
+				case "save_event":
+					var groupIDs []string
+					var eventText string
+					for key, values := range r.Form { // range over map
+						for _, value := range values { // range over []string
+							if key == "groupCheck" {
+								groupIDs = append(groupIDs, value)
+							}
+							if key == "eventText" {
+								eventText = value
+							}
 						}
 					}
+					db.SaveEventData(groupIDs, eventText)
+					http.Redirect(w, r, "/profile", 301)
+				default:
+					err = db.DeleteEvent(r.FormValue("submit"))
+					if err != nil {
+						log.Println(err)
+					}
+					http.Redirect(w, r, "/profile", 302)
 				}
-				db.SaveEventData(groupIDs, eventText)
-				http.Redirect(w, r, "/profile", 301)
 			}
 		}
 	} else {
