@@ -403,6 +403,24 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+		}
+		login := r.FormValue("email")
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(login)
+		db.SendPassword(login)
+		http.ServeFile(w, r, "templates/password_sent.html")
+	} else {
+		http.ServeFile(w, r, "templates/forgot_password.html")
+	}
+}
+
 //LogoutFunc Implements the logout functionality.
 //WIll delete the session information from the cookie store
 func LogoutFunc(w http.ResponseWriter, r *http.Request) {

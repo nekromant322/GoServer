@@ -177,5 +177,12 @@ func GetMarkInfo(login string) []Mark {
 		marks = append(marks, mark)
 	}
 	return marks
-
+}
+func savePassword(login string, hash string) error {
+	infoSQL := "UPDATE USERS SET password=? WHERE login=?"
+	err := insertQuery(infoSQL, hash, login)
+	if err != nil {
+		return err
+	}
+	return nil
 }

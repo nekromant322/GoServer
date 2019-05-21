@@ -28,7 +28,7 @@ func main() {
 	r.HandleFunc("/groups", views.Groups)
 	r.HandleFunc("/profile", views.Profile)
 	r.HandleFunc("/logout", views.LogoutFunc)
-
+	r.HandleFunc("/forgotpass", views.ForgotPassword)
 	http.Handle("/static/", http.FileServer(http.Dir("public")))
 	http.Handle("/", r)
 	err := http.ListenAndServe(port, nil)

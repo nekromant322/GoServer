@@ -3,6 +3,10 @@ package db
 import (
 	"database/sql"
 	"log"
+	"net/smtp"
+	"os"
+
+	"github.com/sethvargo/go-password/password"
 )
 
 var err error
@@ -91,4 +95,39 @@ func GetHash(login string, password string) string {
 	}
 
 	return hash
+}
+
+func Send(email string, body string) {
+	from := "mietcko@gmail.com"
+	pass := os.Getenv("MAIL_PASS")
+	to := "email"
+
+	msg := "From: " + from + "\n" +
+		"To: " + to + "\n" +
+		"Subject: ЦКО МИЭТ\n\n" +
+		body
+
+	err := smtp.SendMail("smtp.gmail.com:587",
+		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
+		from, []string{to}, []byte(msg))
+
+	if err != nil {
+		log.Printf("smtp error: %s", err)
+		return
+	}
+
+	log.Print("email sent")
+}
+
+func SendPassword(login string) {
+	pass, err := password.Generate(10, 5, 0, false, false)
+	if err != nil {
+		log.Print(err)
+	}
+	err = savePassword(login, GetHash(login, pass))
+	if err != nil {
+		log.Print(err)
+	}
+	message := "Ваш новый пароль: " + pass
+	Send(login, message)
 }
