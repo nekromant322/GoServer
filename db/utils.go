@@ -100,8 +100,9 @@ func GetHash(login string, password string) string {
 func Send(email string, body string) {
 	from := "mietcko@gmail.com"
 	pass := os.Getenv("MAIL_PASS")
-	to := "email"
-
+	to := email
+	log.Printf(pass)
+	log.Printf(email)
 	msg := "From: " + from + "\n" +
 		"To: " + to + "\n" +
 		"Subject: ЦКО МИЭТ\n\n" +
