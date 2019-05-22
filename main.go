@@ -1,7 +1,6 @@
 package main
 
 import (
-	"GoServer/db"
 	"GoServer/views"
 	"log"
 	"net/http"
@@ -11,16 +10,11 @@ import (
 )
 
 func main() {
-	check_login := "mysimplelogin"
-	check_pass := "mysimplepass"
-	hash := db.GetHash(check_login, check_pass)
-	println("Check Hash :", hash)
 	port := ":8080"
 	println("Server listen on port", port)
 	r := mux.NewRouter()
 	r.HandleFunc("/", views.MainPage)
 	r.HandleFunc("/teacher", views.TeacherPage)
-	r.HandleFunc("/test", views.TestPage)
 	r.HandleFunc("/login", views.CreateHandler)
 	r.HandleFunc("/androidlogin", views.AndroidLogin)
 	r.HandleFunc("/group/{group}", views.GroupsMarks)
@@ -29,6 +23,11 @@ func main() {
 	r.HandleFunc("/profile", views.Profile)
 	r.HandleFunc("/logout", views.LogoutFunc)
 	r.HandleFunc("/forgotpass", views.ForgotPassword)
+	r.HandleFunc("/admin", views.Admin)
+	r.HandleFunc("/admin_header", views.HeaderAdmin)
+	r.HandleFunc("/admin_groups", views.GroupsAdmin)
+	r.HandleFunc("/admin_main", views.MainAdmin)
+	r.HandleFunc("/admin_group/{group}", views.GroupAdmin)
 	http.Handle("/static/", http.FileServer(http.Dir("public")))
 	http.Handle("/", r)
 	err := http.ListenAndServe(port, nil)

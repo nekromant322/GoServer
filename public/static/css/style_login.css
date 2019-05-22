@@ -1,8 +1,11 @@
+a {
+	color: #9bb6f2;
+}
 body{
 	margin: 0;
 	padding: 0;
 	font-family: sans-serif;
-	background:  url(images/girl.jpg) no-repeat;
+	background:  url(../images/girl.jpg) no-repeat;
 	background-size: cover;
 	
 }

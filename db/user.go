@@ -59,7 +59,11 @@ func ValidUser(login, password string) (bool, int) {
 		}
 	}
 	//If the password matches, return true
-	if GetHash(login, password) == passwordFromDB {
+	hash, err := GetHash(login, password)
+	if err != nil {
+		return false, 0
+	}
+	if hash == passwordFromDB {
 		log.Print("successfully validated with rank", rank)
 		return true, rank
 

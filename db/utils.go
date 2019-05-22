@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/smtp"
 	"os"
@@ -65,9 +66,14 @@ func insertQuery(sql string, args ...interface{}) error {
 	}
 	return err
 }
-func GetHash(login string, password string) string {
+func GetHash(login string, password string) (string, error) {
 
 	key := 1234567
+	if len(login) < 5 {
+		err := errors.New("email is too short")
+		return "", err
+	}
+
 	sol := login[0:4]
 
 	hash := password + sol
@@ -94,10 +100,10 @@ func GetHash(login string, password string) string {
 		hash = hash + character
 	}
 
-	return hash
+	return hash, nil
 }
 
-func Send(email string, body string) {
+func Send(email string, body string) error {
 	from := "mietcko@gmail.com"
 	pass := os.Getenv("MAIL_PASS")
 	to := email
@@ -113,22 +119,30 @@ func Send(email string, body string) {
 		from, []string{to}, []byte(msg))
 
 	if err != nil {
-		log.Printf("smtp error: %s", err)
-		return
+		return err
 	}
 
 	log.Print("email sent")
+	return nil
 }
 
-func SendPassword(login string) {
+func SendPassword(login string) error {
 	pass, err := password.Generate(10, 5, 0, false, false)
 	if err != nil {
-		log.Print(err)
+		return err
 	}
-	err = savePassword(login, GetHash(login, pass))
+	hash, err := GetHash(login, pass)
 	if err != nil {
-		log.Print(err)
+		return err
+	}
+	err = savePassword(login, hash)
+	if err != nil {
+		return err
 	}
 	message := "Ваш новый пароль: " + pass
 	Send(login, message)
+	if err != nil {
+		return err
+	}
+	return err
 }
