@@ -480,17 +480,62 @@ func GroupAdmin(w http.ResponseWriter, r *http.Request) {
 			var shortLessonsInfo []db.ShortLessonInfo
 			shortLessonsInfo = db.GetLessonInfo(courseID)
 			groupMarks = db.GetStudentMarks(groupNum)
+			allStudents := db.GetAllStudents(groupNum)
 			markData := struct {
-				CourseID   int
-				Marks      db.GroupMarks
-				LessonInfo []db.ShortLessonInfo
-			}{courseID, groupMarks, shortLessonsInfo}
+				CourseID    int
+				AllStudents []db.StudentShort
+				Marks       db.GroupMarks
+				LessonInfo  []db.ShortLessonInfo
+			}{courseID, allStudents, groupMarks, shortLessonsInfo}
 			err = tmpl.Execute(w, markData)
 			if err != nil {
 				http.Error(w, err.Error(), 400)
 				return
 			}
 		} else if r.Method == "POST" {
+			err := r.ParseForm()
+			if err != nil {
+				log.Println(err)
+			}
+			groupNum, _ := strconv.Atoi(mux.Vars(r)["group"])
+			courseID, _ := db.GetCourseID(groupNum)
+			if r.FormValue("submit") == "add_student" {
+				login := r.FormValue("student")
+				db.AddStudent(groupNum, login)
+				if err != nil {
+					log.Println(err)
+				}
+				http.Redirect(w, r, "/admin_group/"+strconv.Itoa(groupNum), 301)
+				return
+			}
+			if strings.Split(r.FormValue("submit"), ";")[0] == "del_student" {
+				err := db.DelStudentFromGroup(groupNum, strings.Split(r.FormValue("submit"), ";")[1])
+				if err != nil {
+					log.Println(err)
+				}
+				http.Redirect(w, r, "/admin_group/"+strconv.Itoa(groupNum), 301)
+				return
+			}
+			if r.FormValue("submit") == "save_marks" {
+				for key, values := range r.Form {
+					if strings.Split(key, ";")[0] == "home_mark" || strings.Split(key, ";")[0] == "class_mark" {
+						err := db.SaveLessonData(key, values, groupNum, courseID)
+						if err != nil {
+							log.Println(err)
+						}
+					}
+				}
+			} else {
+				for key, values := range r.Form {
+					if (strings.Split(key, ";")[0] == "homework" || strings.Split(key, ";")[0] == "theme") && strings.Split(key, ";")[2] == r.FormValue("submit") {
+						err := db.SaveLessonData(key, values, groupNum, courseID)
+						if err != nil {
+							log.Println(err)
+						}
+					}
+				}
+			}
+			http.Redirect(w, r, "/admin_group/"+strconv.Itoa(groupNum), 301)
 
 		}
 	} else {
