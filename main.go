@@ -15,7 +15,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", views.MainPage)
 	r.HandleFunc("/teacher", views.TeacherPage)
-	r.HandleFunc("/login", views.CreateHandler)
+	r.HandleFunc("/login", views.Login)
 	r.HandleFunc("/androidlogin", views.AndroidLogin)
 	r.HandleFunc("/group/{group}", views.GroupsMarks)
 	r.HandleFunc("/header", views.Header)

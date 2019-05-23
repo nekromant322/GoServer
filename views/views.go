@@ -61,6 +61,7 @@ func AndroidLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//MainPage is used to handle the main page for students and redirects for teachers and admins
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -107,6 +108,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//GroupsMarks is used to show a page with marks of a group for teacher
 func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -177,24 +179,13 @@ func GroupsMarks(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 }
+
+//Header is used for showing a header on teacher page
 func Header(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
 		tmpl, err := template.ParseFiles("templates/header.html")
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-		login := fmt.Sprintf("%v", session.Values["username"])
-
-		_, err = db.GetRank(login)
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-		var teacherGroups []db.TeacherGroup
-		teacherGroups = db.GetTeacherGroupList(login)
-		err = tmpl.Execute(w, teacherGroups)
+		err = tmpl.Execute(w, nil)
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
@@ -204,6 +195,8 @@ func Header(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 }
+
+//Groups is used to show groups of a teacher
 func Groups(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -233,6 +226,7 @@ func Groups(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//Profile is used to show teacher's profile and edit events
 func Profile(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -310,6 +304,7 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//TeacherPage is used to show frames related to teacher page
 func TeacherPage(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -318,17 +313,7 @@ func TeacherPage(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-		login := fmt.Sprintf("%v", session.Values["username"])
-
-		_, err = db.GetRank(login)
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-		var teacherGroups []db.TeacherGroup
-		teacherGroups = db.GetTeacherGroupList(login)
-		err = tmpl.Execute(w, teacherGroups)
-
+		err = tmpl.Execute(w, nil)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return
@@ -339,7 +324,8 @@ func TeacherPage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func CreateHandler(w http.ResponseWriter, r *http.Request) {
+//Login is used to handle login in
+func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -379,6 +365,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//ForgotPassword is used to send new password to users
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
@@ -414,6 +401,7 @@ func LogoutFunc(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", 302)
 }
 
+//Admin is used to hadle admin frames
 func Admin(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -442,6 +430,8 @@ func Admin(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+//HeaderAdmin is used to display header on admin page
 func HeaderAdmin(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -455,6 +445,8 @@ func HeaderAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 }
+
+//GroupAdmin is used to edit group data and marks
 func GroupAdmin(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -501,9 +493,11 @@ func GroupAdmin(w http.ResponseWriter, r *http.Request) {
 			courseID, _ := db.GetCourseID(groupNum)
 			if r.FormValue("submit") == "add_student" {
 				login := r.FormValue("student")
-				db.AddStudent(groupNum, login)
-				if err != nil {
-					log.Println(err)
+				if login != "" {
+					db.AddStudent(groupNum, login)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 				http.Redirect(w, r, "/admin_group/"+strconv.Itoa(groupNum), 301)
 				return
@@ -542,6 +536,8 @@ func GroupAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 }
+
+//GroupsAdmin is used to show all groups
 func GroupsAdmin(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
@@ -572,14 +568,46 @@ func GroupsAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 }
+
+//MainAdmin is used to create accounts and groups
 func MainAdmin(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessions.Store.Get(r, "session")
 	if session.Values["loggedin"] == "true" {
 		tmpl, err := template.ParseFiles("templates/main_super.html")
-		err = tmpl.Execute(w, nil)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return
+		}
+		login := fmt.Sprintf("%v", session.Values["username"])
+		rank, err := db.GetRank(login)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		if rank != 2 {
+			http.Error(w, err.Error(), 403)
+			return
+		}
+		if r.Method == "GET" {
+			err = tmpl.Execute(w, nil)
+
+		} else if r.Method == "POST" {
+			err := r.ParseForm()
+			if err != nil {
+				log.Println(err)
+			}
+			if r.FormValue("submit") == "add_user" {
+				rank := r.FormValue("acc_type")
+				name := r.FormValue("real_name")
+				login := r.FormValue("login")
+				bday := r.FormValue("birthday")
+				bonus := r.FormValue("bonus_info")
+				err = db.AddUser(rank, name, login, bday, bonus)
+				if err != nil {
+					log.Println(err)
+				}
+				http.Redirect(w, r, "/admin_main", 301)
+			}
 		}
 	} else {
 		http.Redirect(w, r, "/login", 302)

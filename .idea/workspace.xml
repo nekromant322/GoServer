@@ -372,8 +372,8 @@
 =======
     <MESSAGE value="Вывод массива структур в index.html" />
     <MESSAGE value="Главная страницу, открывается хреново" />
-    <MESSAGE value="Страницу для входа, считываются данные CreateHandler" />
-    <option name="LAST_COMMIT_MESSAGE" value="Страницу для входа, считываются данные CreateHandler" />
+    <MESSAGE value="Страницу для входа, считываются данные Login" />
+    <option name="LAST_COMMIT_MESSAGE" value="Страницу для входа, считываются данные Login" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/static/main.html">

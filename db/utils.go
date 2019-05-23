@@ -139,7 +139,7 @@ func SendPassword(login string) error {
 	if err != nil {
 		return err
 	}
-	message := "Ваш новый пароль: " + pass
+	message := "Ваш пароль для доступа к ckomiet.ru: " + pass
 	Send(login, message)
 	if err != nil {
 		return err

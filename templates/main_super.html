@@ -9,43 +9,40 @@
   <link href="/static/css/style_tabs_super.css" rel="stylesheet">
   <link href="/static/css/general_font.css" rel="stylesheet">
   </head>
-  
+	<form method="POST" action="/admin_main">
+
   <body bgcolor="#ffffff">
   
   <div class="tabs">
   
     <input id="tab1" type="radio" name="tabs" checked>
-    <label for="tab1" title="Группы">Курсы</label>
+    <label for="tab1" title="Аккаунты">Аккаунты</label>
  
     <input id="tab2" type="radio" name="tabs">
-    <label for="tab2" title="Ученики">Группы</label>
+    <label for="tab2" title="Группы">Группы</label>
 	
 	<input id="tab3" type="radio" name="tabs">
-    <label for="tab3" title="Аккаунты">Аккаунты</label>
+    <label for="tab3" title="Курсы">Курсы</label>
   
 	<section id="content-tab1">
-		<h4>Курсы ЦКО МИЭТ:</h4>
-		<!--<table>
-		<tr>
-		<td><h5>C++</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
-		</tr>
-		<tr>
-		<td><h5>Scratch</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
-		</tr>
-		<tr>
-		<td><h5>Unity 3D</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
-		</tr>
-		</table>-->
+			<h4>Выберите тип аккаунта:</h4>
+			<input type="radio" name="acc_type" value="0" checked>Ученик<Br>
+			<input type="radio" name="acc_type" value="1">Преподаватель<Br>
+			<input type="radio" name="acc_type" value="2">Администратор</p>
+			
+			<h4>ФИО:</h4>
+			<p><input type="text" name="real_name"></p>
+			<h4>Почта:</h4>
+			<p><input type="text" name="login"></p>
+			<h4>Дата рождения:</h4>
+			<p><input type="date" name="birthday"></p>
+			<h4>Доп. информация:</h4>
+			<p><textarea rows="10" name="bonus_info"></textarea></p>
+			
+			<p><button type="submit" class = "but" value="add_user" name="submit">Добавить</p>
 		
-		<h5>Unity 3D   <button class="but_mini"><i class="fontello">x</i></button></h5>
-		<h5>C++   <button class="but_mini"><i class="fontello">x</i></button></h5>
-		<h5>Unity 3D   <button class="but_mini"><i class="fontello">x</i></button></h5>
-		
-		<h4>Название курса:</h4>
-		<p><input type="text"></p>
-		<h4>Количество ак. часов:</h4>
-		<p><input type="text"></p>
-		<p><input type="submit" class = "but" value="Добавить"></p>
+
+
 		
 	</section>		
 		
@@ -77,23 +74,33 @@
 
 	<section id="content-tab3">
   
-		<h4>Выберите тип аккаунта:</h4>
-		<input type="radio" name="drink" value="rad1">Ученик<Br>
-		<input type="radio" name="drink" value="rad2">Преподаватель<Br>
-		<input type="radio" name="drink" value="rad3">Администратор</p>
-		
-		<h4>ФИО:</h4>
-		<p><input type="text"></p>
-		<h4>Почта:</h4>
-		<p><input type="text"></p>
-		<h4>Дата рождения:</h4>
-		<p><input type="text"></p>
-		<h4>Доп. информация:</h4>
-		<p><textarea rows="10" name="comment"></textarea></p>
-		
-		<p><input type="submit" class = "but" value="Добавить"></p>
-  
+
+
+			<h4>Курсы ЦКО МИЭТ:</h4>
+			<!--<table>
+			<tr>
+			<td><h5>C++</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
+			</tr>
+			<tr>
+			<td><h5>Scratch</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
+			</tr>
+			<tr>
+			<td><h5>Unity 3D</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
+			</tr>
+			</table>-->
+			
+			<h5>Unity 3D   <button class="but_mini"><i class="fontello">x</i></button></h5>
+			<h5>C++   <button class="but_mini"><i class="fontello">x</i></button></h5>
+			<h5>Unity 3D   <button class="but_mini"><i class="fontello">x</i></button></h5>
+			
+			<h4>Название курса:</h4>
+			<p><input type="text"></p>
+			<h4>Количество ак. часов:</h4>
+			<p><input type="text"></p>
+			<p><input type="submit" class = "but" value="Добавить"></p>
+
 	</section>
 	</div>
-  </body>
+	</body>
+	</form>
   </html>

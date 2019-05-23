@@ -87,3 +87,16 @@ func DelStudentFromGroup(groupID int, login string) error {
 	}
 	return nil
 }
+
+func AddUser(rank, name, login, bday, bonus string) error {
+	userSQL := "INSERT INTO USERS(login, password, rank, real_name, birthday, bonus_info) values (?,'-',?,?,?,?)"
+	err := insertQuery(userSQL, login, rank, name, bday, bonus)
+	if err != nil {
+		return err
+	}
+	err = SendPassword(login)
+	if err != nil {
+		return err
+	}
+	return nil
+}
