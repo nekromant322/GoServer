@@ -8,8 +8,8 @@ CREATE TABLE USERS(
 );
 CREATE TABLE COURSES(
     courseID        INTEGER NOT NULL PRIMARY KEY,
-    name            INTEGER NOT NULL,
-    amount          INTEGER
+    name            TEXT    NOT NULL,
+    amount          INTEGER,
 );
 CREATE TABLE MARKS(
     login           TEXT    NOT NULL,

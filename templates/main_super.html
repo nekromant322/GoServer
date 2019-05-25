@@ -7,7 +7,11 @@
   <link href="/static/css/style_modal_admin.css" rel="stylesheet">
   <link href="/static/css/style_button.css" rel="stylesheet">
   <link href="/static/css/style_tabs_super.css" rel="stylesheet">
-  <link href="/static/css/general_font.css" rel="stylesheet">
+	<link href="/static/css/general_font.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
+
   </head>
 	<form method="POST" action="/admin_main">
 
@@ -39,35 +43,30 @@
 			<h4>Доп. информация:</h4>
 			<p><textarea rows="10" name="bonus_info"></textarea></p>
 			
-			<p><button type="submit" class = "but" value="add_user" name="submit">Добавить</p>
-		
-
-
-		
+			<button type="submit" class = "but" value="add_user" name="submit">Добавить	
 	</section>		
 		
 	<section id="content-tab2">	
-	<h4>Название курса: </h4>
-	<p><input type="text"></p>
+	<h4>Название группы: </h4>
+	<p><input type="text" name="group_name"></p>
 	<h4>Выберите курс: </h4>
-	   <p><select name="course_name">
-    <option disabled>Курс</option>
-    <option value="С++">С++</option>
-    <option value="Unity 3D">Unity 3D</option>
-    <option value="Scratch">Scratch</option>
-    <option value="3D">3D</option>
-   </select></p>
-   <h4>Выберите преподавателя: </h4>
-	   <p><select name="course_name">
-    <option disabled>Курс</option>
-    <option value="Марандюк Анатолий">Марандюк Анатолий</option>
-    <option value="Мефед Анастасия">Мефед Анастасия</option>
-    <option value="Абаськин Кирилл">Абаськин Кирилл</option>
-    <option value="Аргунов Роман">Аргунов Роман</option>
+	<p><select class="js-example-basic-single" name="course_select"  style="width: 100%">
+			 <option value=""></option>
+			 {{range .Courses}}
+			 <option value="{{.CourseID}}">{{.CourseName}}</option>
+			 {{end}}
+		</select></p>
+	 <h4>Выберите преподавателя: </h4>
+		<p><select class="js-example-basic-single" name="teacher_select"  style="width: 100%">
+										 <option value="">                                </option>
+										 {{range .Teachers}}
+										 <option value="{{.Login}}">{{.Name}} {{.Login}}</option>
+										 {{end}}
+									</select></p>
    </select></p>
    <h4>Доп. информация:</h4>
-		<p><textarea rows="10" name="comment"></textarea></p>
-  	<p><input type="submit" class = "but" value="Добавить"></p>
+		<p><textarea rows="10" name="group_comment"></textarea></p>
+  	<button type="submit" name ="submit" class = "but" value="add_group">Добавть
 				
 	</section>
  
@@ -88,19 +87,33 @@
 			<td><h5>Unity 3D</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
 			</tr>
 			</table>-->
-			
-			<h5>Unity 3D   <button class="but_mini"><i class="fontello">x</i></button></h5>
-			<h5>C++   <button class="but_mini"><i class="fontello">x</i></button></h5>
-			<h5>Unity 3D   <button class="but_mini"><i class="fontello">x</i></button></h5>
-			
+			{{range .Courses}}
+			<h5><button class="but_mini" name="submit" value="del_course;{{.CourseID}}"><i class="fontello">x</i></button>  {{.CourseName}}</h5>
+			{{end}}
 			<h4>Название курса:</h4>
-			<p><input type="text"></p>
+			<p><input type="text" name="course_name"></p>
 			<h4>Количество ак. часов:</h4>
-			<p><input type="text"></p>
-			<p><input type="submit" class = "but" value="Добавить"></p>
+			<p><input type="text" name="course_hours"></p>
+			<button type="submit" name="submit" class = "but" value="add_course">Добавить
 
 	</section>
 	</div>
+	<script>
+		/* When the user clicks on the button,
+		toggle between hiding and showing the dropdown content */
+		function myFunction() {
+			document.getElementById("myDropdown").classList.toggle("show");
+		}
+		
+				 $(document).ready(function() {
+						$('.js-example-basic-single').select2(
+							 {
+									theme: "classic"
+							 }
+						);
+						
+				 });
+		</script>
 	</body>
 	</form>
   </html>

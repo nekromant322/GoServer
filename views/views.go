@@ -475,7 +475,7 @@ func GroupAdmin(w http.ResponseWriter, r *http.Request) {
 			allStudents := db.GetAllStudents(groupNum)
 			markData := struct {
 				CourseID    int
-				AllStudents []db.StudentShort
+				AllStudents []db.UserShort
 				Marks       db.GroupMarks
 				LessonInfo  []db.ShortLessonInfo
 			}{courseID, allStudents, groupMarks, shortLessonsInfo}
@@ -589,12 +589,22 @@ func MainAdmin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if r.Method == "GET" {
-			err = tmpl.Execute(w, nil)
+			teachers, courses := db.GetTeachersAndCourses()
+			courseTeacherData := struct {
+				Teachers []db.UserShort
+				Courses  []db.CourseShort
+			}{teachers, courses}
+			err = tmpl.Execute(w, courseTeacherData)
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
 
 		} else if r.Method == "POST" {
 			err := r.ParseForm()
 			if err != nil {
 				log.Println(err)
+				return
 			}
 			if r.FormValue("submit") == "add_user" {
 				rank := r.FormValue("acc_type")
@@ -605,6 +615,58 @@ func MainAdmin(w http.ResponseWriter, r *http.Request) {
 				err = db.AddUser(rank, name, login, bday, bonus)
 				if err != nil {
 					log.Println(err)
+					return
+				}
+				http.Redirect(w, r, "/admin_main", 301)
+			}
+			if r.FormValue("submit") == "add_course" {
+				courseName := r.FormValue("course_name")
+				amount, err := strconv.Atoi(r.FormValue("course_hours"))
+				if err != nil {
+					http.Redirect(w, r, "/admin_main", 301)
+					log.Println(err)
+					return
+				}
+				err = db.AddCourse(courseName, amount)
+				if err != nil {
+					http.Redirect(w, r, "/admin_main", 301)
+					log.Println(err)
+					return
+				}
+				http.Redirect(w, r, "/admin_main", 301)
+			}
+			if strings.Split(r.FormValue("submit"), ";")[0] == "del_course" {
+				courseID, err := strconv.Atoi(strings.Split(r.FormValue("submit"), ";")[1])
+				if err != nil {
+					http.Redirect(w, r, "/admin_main", 301)
+					log.Println(err)
+					return
+				}
+				err = db.DeleteCourse(courseID)
+				if err != nil {
+					http.Redirect(w, r, "/admin_main", 301)
+					log.Println(err)
+					return
+				}
+				http.Redirect(w, r, "/admin_main", 301)
+			}
+			if r.FormValue("submit") == "add_group" {
+				teacher := r.FormValue("teacher_select")
+				info := r.FormValue("group_comment")
+				name := r.FormValue("group_name")
+				courseID, err := strconv.Atoi(r.FormValue("course_select"))
+				if err != nil {
+					http.Redirect(w, r, "/admin_main", 301)
+					log.Println(err)
+					return
+				}
+				if teacher != "" {
+					err = db.AddGroup(name, courseID, teacher, info)
+					if err != nil {
+						http.Redirect(w, r, "/admin_main", 301)
+						log.Println(err)
+						return
+					}
 				}
 				http.Redirect(w, r, "/admin_main", 301)
 			}
