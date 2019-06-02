@@ -29,8 +29,8 @@ type GroupInfo struct {
 }
 type LessonInfo struct {
 	LessonNumber int    `json:"LessonNumber"`
-	ClassMark    int    `json:"ClassMark"`
-	HomeMark     int    `json:"HomeMark"`
+	ClassMark    string `json:"ClassMark"`
+	HomeMark     string `json:"HomeMark"`
 	Homework     string `json:"Homework"`
 	Theme        string `json:"Theme"`
 }
@@ -44,7 +44,6 @@ type Mark struct {
 
 //ValidUser will check if the user exists in db and if it does, checks if the login/password combination is valid
 func ValidUser(login, password string) (bool, int) {
-	//password = GetHash(login,password); раскоментить когда в БД будут хранится хеши
 	var passwordFromDB string
 	var rank int
 	userSQL := "SELECT password, rank FROM USERS WHERE login=?"
@@ -140,13 +139,13 @@ func GetGroupInfo(group int, login string) GroupInfo {
 	var lessonsInfo []LessonInfo
 	var eventsInfo []Event
 	groupInfo.GroupID = group
-	lessonSQL := "SELECT MARKS.lesson_number, theme, homework, class_mark, home_mark FROM LESSONS, MARKS, GROUPS WHERE (GROUPS.groupID = ?) AND (GROUPS.courseID=LESSONS.courseID) AND (MARKS.groupID =?) AND (LESSONS.lesson_number = MARKS.lesson_number) AND (login = ?);"
+	lessonSQL := "SELECT MARKS.lesson_number, class_mark, home_mark, theme, homework FROM LESSONS, MARKS, GROUPS WHERE (GROUPS.groupID = ?) AND (GROUPS.courseID=LESSONS.courseID) AND (MARKS.groupID =?) AND (LESSONS.lesson_number = MARKS.lesson_number) AND (login = ?);"
 	log.Print("Getting lessons for group ", group)
 	rows := database.query(lessonSQL, group, group, login)
 	defer rows.Close()
 	for rows.Next() {
 		var lessonInfo LessonInfo
-		rows.Scan(&lessonInfo.LessonNumber, &lessonInfo.Theme, &lessonInfo.Homework, &lessonInfo.ClassMark, &lessonInfo.HomeMark)
+		rows.Scan(&lessonInfo.LessonNumber, &lessonInfo.ClassMark, &lessonInfo.HomeMark, &lessonInfo.Theme, &lessonInfo.Homework)
 		lessonsInfo = append(lessonsInfo, lessonInfo)
 	}
 	groupInfo.Lessons = lessonsInfo

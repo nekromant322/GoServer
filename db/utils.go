@@ -127,7 +127,7 @@ func Send(email string, body string) error {
 }
 
 func SendPassword(login string) error {
-	pass, err := password.Generate(10, 5, 0, false, false)
+	pass, err := password.Generate(6, 3, 0, false, false)
 	if err != nil {
 		return err
 	}
@@ -135,15 +135,15 @@ func SendPassword(login string) error {
 	if err != nil {
 		return err
 	}
+	log.Printf(pass)
 	err = savePassword(login, hash)
 	if err != nil {
 		return err
 	}
-	log.Printf(pass)
 	message := "Ваш пароль для доступа к ckomiet.ru: " + pass
 	Send(login, message)
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
