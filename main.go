@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	port := ":80"
+	port := ":8080"
 	println("Server listen on port", port)
 	r := mux.NewRouter()
 	r.HandleFunc("/", views.MainPage)
