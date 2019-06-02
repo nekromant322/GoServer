@@ -34,7 +34,7 @@
                <tbody bgcolor="#ffffff">
                   {{range .Marks.StudentsMarks }}
                   <tr>
-			<td class="names" rowspan="2" width="50px"><button class="but_mini" type="submit" value="del_student;{{.Login}}" name="submit">x</button></td>
+			<td class="names" rowspan="2" width="50px"><button class="but_mini" type="submit" value="" name="submit"><a href="#modal_submit">х</a></button></td>
                      <td class="names" rowspan="2" width="200px">{{.Name}}</td>
                      {{$login := .Login}}
                      {{range .Marks}}
@@ -43,7 +43,7 @@
                   </tr>
                   <tr class="DZ">
                      {{range .Marks}}
-                     <td><input type="text" name="home_mark;{{$login}};{{.Lesson}}" value="{{if .HomeMark}}{{.HomeMark}}{{else}}-{{end}}" style="width:50px;background-color:#B5DAF2"/></td>
+                     <td><input type="text" name="home_mark;{{$login}};{{.Lesson}}" value="{{if .HomeMark}}{{.HomeMark}}{{else}}-{{end}}" style="width:50px;background-color:#e8ebf7"/></td>
                      {{end}}
                   </tr>
 									{{end}}
@@ -80,15 +80,30 @@
             <div class="modal-wrapper">
                <div class="CSS-modal-inner">
                   <div class="modal-header">
-                     <h3 class="modal-title"><input type="text" name="theme;_;{{.LessonNumber}}" value="{{.Theme}}" style="width:250px"/></h3>
+                     <h3 class="modal-title"><input type="text" placeholder="Тема занятия" name="theme;_;{{.LessonNumber}}" value="{{.Theme}}" style="width:250px"/></h3>
                      <a href="#close" title="Закрыть" class="close">×</a>
                   </div>
                   <div class="modal-text">    
-                     <textarea rows="4" cols="50" name="homework;_;{{.LessonNumber}}">{{.Homework}}</textarea>
+                     <textarea rows="4" cols="50" name="homework;_;{{.LessonNumber}}" placeholder="Домашнее задание">{{.Homework}}</textarea>
                      <button type="submit" class="but" name="submit" value="{{.LessonNumber}}">Подтвердить</button>
                   </div>
                </div>
             </div>
+         </div>
+             <!-- подтверждение удаления ниже-->
+         <div id="modal_submit" class="modal">
+             <div class="modal-wrapper">
+                 <div class="CSS-modal-inner">
+                     <div class="modal-header">
+                         <h3>Вы действительно хотите удалить ученика?</h3>
+                         <a href="#close" title="Закрыть" class="close">×</a>
+                     </div>
+                     <div class="modal-text">
+                         <h4>Данное действие нельзя будет отменить, данные об ученике будут утеряны.</h4>
+                         <button type="submit" class="but" name="submit" value="del_student;{{.Login}}">Ок</button>
+                     </div>
+                 </div>
+             </div>
          </div>
 				 {{end}}
 				 
@@ -108,7 +123,10 @@
                   
                });
 					</script>
-		
+
+
+
+
       </body>
    </form>
 </html>
@@ -119,7 +137,4 @@
 
 
 
-
-</body>
-</html>
 
