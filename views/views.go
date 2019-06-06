@@ -614,6 +614,7 @@ func MainAdmin(w http.ResponseWriter, r *http.Request) {
 				bonus := r.FormValue("bonus_info")
 				err = db.AddUser(rank, name, login, bday, bonus)
 				if err != nil {
+					http.Redirect(w, r, "/admin_main", 301)
 					log.Println(err)
 					return
 				}

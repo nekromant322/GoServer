@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -26,8 +27,8 @@ type StudentMarks struct {
 }
 type LessonMarks struct {
 	Lesson    int
-	HomeMark  int
-	ClassMark int
+	HomeMark  string
+	ClassMark string
 }
 type GroupMarks struct {
 	Group         int
@@ -111,10 +112,13 @@ func SaveLessonData(key string, value []string, groupID int, courseID int) error
 	sKey := strings.Split(key, ";")
 	dataType := sKey[0]
 	if dataType == "home_mark" || dataType == "class_mark" {
-		marksSQL := "UPDATE MARKS SET " + dataType + " = ? WHERE (login = ?) AND (lesson_number = ?) AND (groupID = ?)"
-		err := insertQuery(marksSQL, value[0], sKey[1], sKey[2], groupID)
-		if err != nil {
-			return err
+		if _, err := strconv.Atoi(value[0]); err == nil || value[0] == "-" {
+
+			marksSQL := "UPDATE MARKS SET " + dataType + " = ? WHERE (login = ?) AND (lesson_number = ?) AND (groupID = ?)"
+			err := insertQuery(marksSQL, value[0], sKey[1], sKey[2], groupID)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if dataType == "theme" || dataType == "homework" {

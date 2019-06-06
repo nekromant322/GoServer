@@ -87,9 +87,9 @@
 			<td><h5>Unity 3D</h5></td><td><button class="but_mini"><i class="fontello">x</i></button></td>
 			</tr>
 			</table>-->
-
-			<h5><button class="but_mini" type="submit" value="" name="submit"><a href="#modal_submit">х</a></button></h5>
-
+			{{range .Courses}}	
+			<h5><button class="but_mini" type="submit" value="" name="submit"><a href="#modal_delcourse{{.CourseID}}">х</a></button>{{.CourseName}}</h5>
+			{{end}}	
 			<h4>Название курса:</h4>
 			<p><input type="text" name="course_name"></p>
 			<h4>Количество ак. часов:</h4>
@@ -117,22 +117,22 @@
 						window.parent.location = document.referrer;
 					}
 		</script>
-
-	  <div id="modal_submit" class="modal">
+		{{range .Courses}}	
+	  <div id="modal_delcourse{{.CourseID}}" class="modal">
 		  <div class="modal-wrapper">
 			  <div class="CSS-modal-inner">
 				  <div class="modal-header">
-					  <h3>Вы действительно хотите удалить ученика?</h3>
+					  <h3>Вы действительно хотите удалить курс?</h3>
 					  <a href="#close" title="Закрыть" class="close">×</a>
 				  </div>
 				  <div class="modal-text">
-					  <h4>Данное действие нельзя будет отменить, данные об ученике будут утеряны.</h4>
-					 <!--<button type="submit" class="but" name="submit" value="del_course;{{.CourseID}}">Ок</button>-->
+					  <h4>Данное действие нельзя будет отменить, данные о курсе и группах будут утеряны.</h4>
+					  <button type="submit" class="but" name="submit" value="del_course;{{.CourseID}}" onclick="reloadFrames()">Ок</button>
 				  </div>
 			  </div>
 		  </div>
 	  </div>
-
+		{{end}}
 
 	</body>
 	</form>

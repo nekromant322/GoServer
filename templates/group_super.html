@@ -18,7 +18,7 @@
             <table border="1" class="marks">
                <thead bgcolor="#bdc3e8">
                   <tr>
-										 <td class="names" rowspan="2" width="50px"></td>
+							<td class="names" rowspan="2" width="50px"></td>
                      <td class="names" rowspan="2" width="200px">Ученик</td>
                      {{range .LessonInfo}}
                      <td colspan="1">{{.LessonNumber}}</td>
@@ -27,7 +27,6 @@
                   <tr>
                      {{range .LessonInfo}}
                      <td class="theme"><a href="#modal{{.LessonNumber}}">{{if .Theme}}{{.Theme}}{{else}}Тема{{end}}</a></td>
-                     <!--добавить фиксированную ширину-->
                      {{end}}
                   </tr>
                </thead>
