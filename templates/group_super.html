@@ -38,12 +38,12 @@
                      <td class="names" rowspan="2" width="200px">{{.Name}}</td>
                      
                      {{range .Marks}}
-                     <td colspan="1"><input type="text" style= "width:50px" name="class_mark;{{$login}};{{.Lesson}}" value="{{if .ClassMark}}{{.ClassMark}}{{else}}-{{end}}"/></td>
+                     <td colspan="1"><input type="text" style= "width:70px" name="class_mark;{{$login}};{{.Lesson}}" value="{{if .ClassMark}}{{.ClassMark}}{{else}}-{{end}}"/></td>
                      {{end}}
                   </tr>
                   <tr class="DZ">
                      {{range .Marks}}
-                     <td><input type="text" name="home_mark;{{$login}};{{.Lesson}}" value="{{if .HomeMark}}{{.HomeMark}}{{else}}-{{end}}" style="width:50px;background-color:#e8ebf7"/></td>
+                     <td><input type="text" name="home_mark;{{$login}};{{.Lesson}}" value="{{if .HomeMark}}{{.HomeMark}}{{else}}-{{end}}" style="width:70px;background-color:#e8ebf7"/></td>
                      {{end}}
                   </tr>
 									{{end}}
